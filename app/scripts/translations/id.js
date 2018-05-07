@@ -20,6 +20,10 @@ CONTRACT_Warning_1              :  'Anda akan **menyebarkan kontrak**.',
 CONTRACT_Warning_2              :  'Ini akan disebarkan pada jaringan berikut:',
 CONTRACT_Warning_3              :  'Anda akan **menjalankan sebuah fungsi dalam kontrak**.',
 
+CORAL_KnownFraud               :  'This address has been found by the Coral Protocol to have engaged in fraudulent behavior. We strongly advise you not to engage with this address.',
+CORAL_Label                     :  'Coral Protocol Trust Score',
+CORAL_Pending                   :  'Retrieving Trust Score...',
+
 SEND_Helper_Contract            :  'Dalam banyak situasi, biarkan ini tetap 0.',
 SEND_ViewOnly                   :  'Anda tidak bisa mengirim hanya dengan alamat Anda. Anda harus menggunakan salah satu opsi lain untuk membuka dompet Anda agar bisa mengirim.',
 SEND_LoadTokens                 :  'Unggah Token',

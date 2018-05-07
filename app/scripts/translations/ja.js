@@ -20,6 +20,10 @@ CONTRACT_Warning_1              :  'まもなく契約が展開されます。',
 CONTRACT_Warning_2              :  '次のネットワークに展開されます：', /*It will be deployed on the following network:*/
 CONTRACT_Warning_3              :  'まもなく契約上の機能が実行されます。', /*You are about to **execute a function on contract**.*/
 
+CORAL_KnownFraud               :  'This address has been found by the Coral Protocol to have engaged in fraudulent behavior. We strongly advise you not to engage with this address.',
+CORAL_Label                     :  'Coral Protocol Trust Score',
+CORAL_Pending                   :  'Retrieving Trust Score...',
+
 SEND_Helper_Contract            :  'ほとんどの場合、0.のままにしておきます。', /*In most cases you should leave this as 0.*/
 SEND_ViewOnly                   :  '自分のアドレスを指定するだけでは送信できません。お財布を解錠する必要があります。', /*You cannot send with only your address. You must use one of the other options to unlock your wallet in order to send.*/
 SEND_LoadTokens                 :  'トークン読込', /*Load Tokens*/

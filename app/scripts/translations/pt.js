@@ -20,6 +20,10 @@ CONTRACT_Warning_1              :  'Você está prestes a **publicar um contrato
 CONTRACT_Warning_2              :  'Ele será publicado na seguinte rede:',
 CONTRACT_Warning_3              :  'Você está prestes a **executar uma função no contrato**.',
 
+CORAL_KnownFraud               :  'This address has been found by the Coral Protocol to have engaged in fraudulent behavior. We strongly advise you not to engage with this address.',
+CORAL_Label                     :  'Coral Protocol Trust Score',
+CORAL_Pending                   :  'Retrieving Trust Score...',
+
 SEND_Helper_Contract            :  'Na maioria dos casos, você deve deixar isto como 0.',
 SEND_ViewOnly                   :  'Você não pode enviar apenas com seu endereço. Você precisa usar uma das outras opções para desbloquear sua carteira para poder enviar.',
 SEND_LoadTokens                 :  'Carregar Tokens',

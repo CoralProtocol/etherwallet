@@ -1,12 +1,13 @@
 'use strict';
 var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
     $scope.tx = {};
-    $scope.signedTx
+    $scope.signedTx;
     $scope.ajaxReq = ajaxReq;
     $scope.unitReadable = ajaxReq.type;
     $scope.sendTxModal = new Modal(document.getElementById('sendTransaction'));
     walletService.wallet = null;
     walletService.password = '';
+    $scope.coralProtocolScore = null;
     $scope.showAdvance = $rootScope.rootScopeShowRawTx = false;
     $scope.dropdownEnabled = true;
     $scope.Validator = Validator;
@@ -34,7 +35,7 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
         gasPrice: globalFuncs.urlGet('gasprice') == null ? null : globalFuncs.urlGet('gasprice'),
         donate: false,
         tokensymbol: globalFuncs.urlGet('tokensymbol') == null ? false : globalFuncs.urlGet('tokensymbol'),
-    }
+    };
 
 
     $scope.setSendMode = function(sendMode, tokenId = '', tokensymbol = '') {
@@ -204,6 +205,26 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
         return isEnough($scope.tx.value, $scope.wallet.balance);
     }
 
+    $scope.getCoralTrustScore = function(toAddress) {
+        $scope.coralProtocolScore = null;
+        const apiKey = '32b9d6f8-9ea8-4200-9bed-f0d8f81fb502';
+        if (apiKey) {
+            const coralApiUri = 'https://api.heycoral.com/report?blockchain=ETH&address=' + toAddress;
+            ajaxReq.http({
+                method: 'GET',
+                url: coralApiUri,
+                headers: {'x-api-key': apiKey}
+            }).then(function(response){
+                if (response.data.success == true) {
+                    $scope.coralProtocolScore = response.data && response.data.score;
+                    $scope.coralPointerMargin = parseInt(($scope.coralProtocolScore - 1) / 6 * 100) + '%';
+                }
+            }, function(err){
+                console.log(err);
+            });
+        }
+    }
+
     $scope.generateTx = function() {
         if (!$scope.Validator.isValidAddress($scope.tx.to)) {
             $scope.notifier.danger(globalFuncs.errorMsgs[5]);
@@ -229,6 +250,9 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
             txData.data = $scope.wallet.tokenObjs[$scope.tokenTx.id].getData($scope.tokenTx.to, $scope.tokenTx.value).data;
             txData.value = '0x00';
         }
+
+        $scope.getCoralTrustScore($scope.tx.to);
+
         uiFuncs.generateTx(txData, function(rawTx) {
             if (!rawTx.isError) {
                 $scope.rawTx = rawTx.rawTx;

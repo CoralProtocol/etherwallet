@@ -307,6 +307,30 @@
 
     </div>
 
+    <div class="row form-group" ng-show="rootScopeShowRawTx">
+      <div class="col-sm-5 col-sm-offset-4">
+        <label class="coral__logo" translate="CORAL_Label">
+          Coral Protocol Trust Score
+        </label>
+        <div translate="CORAL_Pending" ng-show="!coralProtocolScore">
+          Retrieving Trust Score...
+        </div>
+        <div ng-show="coralProtocolScore">
+          <div class="coral__graphic">
+            <div class="coral__pointer"
+                 ng-style="{ 'margin-left' : coralPointerMargin }">
+              <div>{{coralProtocolScore}}</div>
+              <img src="images/coral/scale_arrow.svg" />
+            </div>
+            <img src="images/coral/color_scale.svg" class="coral__scale" />
+            <div ng-if="coralProtocolScore==1" translate="CORAL_KnownFraud">
+              This address has been found by Coral Protocol to have engaged in fraudulent behavior. We strongly advise you not to engage with this address.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="clearfix form-group" ng-show="rootScopeShowRawTx">
       <a class="btn btn-primary btn-block col-sm-11"
          data-toggle="modal"
