@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="119px" height="8px" viewBox="0 0 119 8" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>color_scale</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="0%" y1="50%" x2="100%" y2="50%" id="linearGradient-1">
+            <stop stop-color="#D6ED7A" offset="0%"></stop>
+            <stop stop-color="#DFDD74" offset="18.3090111%"></stop>
+            <stop stop-color="#EBCE6F" offset="31.1832991%"></stop>
+            <stop stop-color="#F4BE69" offset="43.6727089%"></stop>
+            <stop stop-color="#F4A05B" offset="56.5612112%"></stop>
+            <stop stop-color="#EB7344" offset="70.347945%"></stop>
+            <stop stop-color="#E0492D" offset="83.2249666%"></stop>
+            <stop stop-color="#D41010" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="color_scale" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle-6-Copy" fill="url(#linearGradient-1)" transform="translate(59.500000, 4.000000) scale(-1, 1) translate(-59.500000, -4.000000) " x="0" y="0" width="119" height="8"></rect>
+    </g>
+</svg>
