@@ -23,6 +23,7 @@ CONTRACT_Warning_3              :  '你將要**執行一個合約上的函數**.
 CORAL_KnownFraud               :  'This address has been found by the Coral Protocol to have engaged in fraudulent behavior. We strongly advise you not to engage with this address.',
 CORAL_Label                     :  'Coral Protocol Trust Score',
 CORAL_Pending                   :  'Retrieving Trust Score...',
+CORAL_ESCROW_Desc           : 'Escrow Protection is an optional service offered by MyEtherWallet to protect your funds in the case of fraud',
 
 SEND_Helper_Contract            :  '大部分的情況下此欄位應為0。',
 SEND_ViewOnly                   :  '你不能只提供地址。 你必須要下列其中一個方法解鎖你的錢包。',

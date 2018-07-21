@@ -268,7 +268,62 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
 
     $scope.sendTx = function() {
         $scope.sendTxModal.close();
-        uiFuncs.sendTx($scope.signedTx, function(resp) {
+        if($scope.escrowSelected) {
+          if($scope.wallet.getBalance() >= $scope.parsedSignedTx.txFee.eth + 0.01) {
+            const CoralContract = new window.web3.eth.Contract(window.coral.abtsABIDefinition.abi);
+            const byteCode = window.coral.abtsABIDefinition.bytecode;
+            let privateKey = '0x' + uiFuncs.getTxData($scope).privKey;
+            let gasPrice = window.web3.utils.toWei('20', 'gwei').toString(16);
+            let deploy = CoralContract.deploy({
+              data: byteCode,
+              arguments: ['0xf2a70e834e839ad4a7211dfff6183886a96062b3', $scope.parsedSignedTx.to, '4']
+            }).encodeABI();
+            let transactionObject = {
+              gas: window.web3.utils.toHex(6400000),
+              data: deploy,
+              from: $scope.parsedSignedTx.from
+            };
+            window.web3.eth.accounts.signTransaction(transactionObject, privateKey, function (error, signedTx) {
+              if (error) {
+                //do stuff
+                console.log('error', error)
+              } else {
+                window.web3.eth.sendSignedTransaction(signedTx.rawTransaction)
+                  .on('transactionHash', function(hash){
+                    console.log('transactionHash', hash)
+                  })
+                  .on('receipt', function(receipt){
+                    console.log('receipt', receipt)
+                  })
+                  .on('confirmation', function(confirmationNumber, receipt){
+                    console.log('confirmation', confirmationNumber, receipt)
+                    if(confirmationNumber === 0) {
+                      const mooseInstance = new window.web3.eth.Contract(window.coral.abtsABIDefinition.abi, receipt.confirmationAddress);
+                      console.log('SEND INSTANCE TRANSACTION')
+                      var value = window.web3.utils.toWei(parseInt($scope.parsedSignedTx.value).toString(), 'ether')
+                      mooseInstance.methods.initiateScoreRetrieval().send({value: value, from: $scope.parsedSignedTx.from})
+                        .on('transactionHash', function(hash){
+                          console.log('method transactionHash', hash)
+                        })
+                        sentTransaction.on('receipt', function(receipt){
+                          console.log('method receipt', receipt)
+                        })
+                        sentTransaction.on('confirmation', function(confirmationNumber, receipt){
+                          console.log('method confirmation', confirmationNumber, receipt)
+                        })
+                        sentTransaction.on('error', console.error);
+
+                        console.log('POST EVERYTHING')
+                    }
+                  })
+                  .on('error', console.error);
+              }
+            })
+          } else {
+            $scope.notifier.danger('Not enough ETH to cover both transaction fee and escrow fee');
+          }
+        } else {
+          uiFuncs.sendTx($scope.signedTx, function(resp) {
             if (!resp.isError) {
                 var checkTxLink = "https://www.myetherwallet.com?txHash=" + resp.data + "#check-tx-status";
                 var txHashLink = $scope.ajaxReq.blockExplorerTX.replace("[[txHash]]", resp.data);
@@ -284,6 +339,7 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
                 $scope.notifier.danger(resp.error);
             }
         });
+      }
     }
 
     $scope.transferAllBalance = function() {
@@ -312,6 +368,11 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
       } else {
         if( signedTx.slice(0,2)=="0x" ) signedTx = signedTx.slice(2, signedTx.length )
         txData = new ethUtil.Tx(signedTx)
+      }
+      if($scope.escrowSelected) {
+        $scope.parsedSignedTx.escrowFee     = 0.01
+      } else {
+        $scope.parsedSignedTx.escrowFee     = 0
       }
       $scope.parsedSignedTx.gasPrice      = {}
       $scope.parsedSignedTx.txFee         = {}

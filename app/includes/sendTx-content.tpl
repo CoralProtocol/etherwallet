@@ -178,8 +178,6 @@
       </p>
     </a>
 
-
-
     <div ng-show="showAdvance || checkTxPage">
 
       <!-- Data -->
@@ -195,11 +193,11 @@
           <label translate="TRANS_data"> Data: </label>
 
           <input type="text"
-                 class="form-control"
-                 placeholder="0x6d79657468657277616c6c65742e636f6d20697320746865206265737421"
-                 ng-model="tx.data"
-                 ng-disabled="tx.readOnly || checkTxReadOnly"
-                 ng-class="Validator.isValidHex(tx.data) ? 'is-valid' : 'is-invalid'"/>
+          class="form-control"
+          placeholder="0x6d79657468657277616c6c65742e636f6d20697320746865206265737421"
+          ng-model="tx.data"
+          ng-disabled="tx.readOnly || checkTxReadOnly"
+          ng-class="Validator.isValidHex(tx.data) ? 'is-valid' : 'is-invalid'"/>
 
         </div>
       </section>
@@ -210,53 +208,68 @@
         <div class="col-sm-11 clearfix">
 
           <a class="account-help-icon"
-             href="https://myetherwallet.github.io/knowledge-base/transactions/what-is-nonce.html"
-             target="_blank"
-             rel="noopener noreferrer">
-            <img src="images/icon-help.svg" class="help-icon" />
-            <p class="account-help-text" translate="NONCE_Desc"></p>
-          </a>
+          href="https://myetherwallet.github.io/knowledge-base/transactions/what-is-nonce.html"
+          target="_blank"
+          rel="noopener noreferrer">
+          <img src="images/icon-help.svg" class="help-icon" />
+          <p class="account-help-text" translate="NONCE_Desc"></p>
+        </a>
 
-          <label translate="OFFLINE_Step2_Label_5">
-            Nonce
-          </label>
-          <input type="text"
-                 class="form-control"
-                 placeholder="2"
-                 ng-model="tx.nonce"
-                 ng-disabled="checkTxReadOnly"
-                 ng-class="Validator.isPositiveNumber(tx.nonce) ? 'is-valid' : 'is-invalid'" />
+        <label translate="OFFLINE_Step2_Label_5">
+          Nonce
+        </label>
+        <input type="text"
+        class="form-control"
+        placeholder="2"
+        ng-model="tx.nonce"
+        ng-disabled="checkTxReadOnly"
+        ng-class="Validator.isPositiveNumber(tx.nonce) ? 'is-valid' : 'is-invalid'" />
 
-        </div>
-      </section>
+      </div>
+    </section>
 
 
-      <!-- Gas Price -->
-      <section class="row form-group" ng-show="checkTxPage">
-        <div class="col-sm-11 clearfix">
-          <a class="account-help-icon"
-             href="https://myetherwallet.github.io/knowledge-base/gas/what-is-gas-ethereum.html"
-             target="_blank"
-             rel="noopener noreferrer">
-                <img src="images/icon-help.svg" class="help-icon" />
-                <p class="account-help-text" translate="GAS_PRICE_Desc"></p>
-          </a>
+    <!-- Gas Price -->
+    <section class="row form-group" ng-show="checkTxPage">
+      <div class="col-sm-11 clearfix">
+        <a class="account-help-icon"
+        href="https://myetherwallet.github.io/knowledge-base/gas/what-is-gas-ethereum.html"
+        target="_blank"
+        rel="noopener noreferrer">
+        <img src="images/icon-help.svg" class="help-icon" />
+        <p class="account-help-text" translate="GAS_PRICE_Desc"></p>
+      </a>
 
-          <label translate="OFFLINE_Step2_Label_3">
-            Gas Price:
-          </label>
-          <input type="text"
-                 class="form-control"
-                 placeholder="50"
-                 ng-model="tx.gasPrice"
-                 ng-disabled="checkTxReadOnly"
-                 ng-class="Validator.isPositiveNumber(tx.gasPrice) ? 'is-valid' : 'is-invalid'" />
-
-        </div>
-      </section>
+      <label translate="OFFLINE_Step2_Label_3">
+        Gas Price:
+      </label>
+      <input type="text"
+      class="form-control"
+      placeholder="50"
+      ng-model="tx.gasPrice"
+      ng-disabled="checkTxReadOnly"
+      ng-class="Validator.isPositiveNumber(tx.gasPrice) ? 'is-valid' : 'is-invalid'" />
 
     </div>
-    <!-- / Advanced Option Panel -->
+  </section>
+
+</div>
+<!-- / Advanced Option Panel -->
+    <!-- Coral Protocol Escrow Protection -->
+    <a class="coral-escrow-icon" ng-click="showEscrow=true">
+      <img src="images/icon-help.svg" class="help-icon" />
+      <p class="coral-escrow-text" translate="CORAL_ESCROW_Desc"></p>
+      <p class="strong">
+        +Add Escrow Protection to Transaction (0.01 ETH)
+      </p>
+    </a>
+
+    <section class="row form-group confirm-coral-escrow col-xs-12" ng-show="showEscrow">
+      <p class="strong">To add escrow protection to your transaction, please check the box below:</p>
+      <input type="checkbox" id="escrow-checkbox" name="escrow-checkbox" ng-model="escrowSelected"></input>
+      <label for="escrow-checkbox" class='checkbox-label'>I agree to the amount of the escrow transaction fee (0.01 ETH). I have also read and agree with the <span class="terms-and-conditions-escrow">Terms and Conditions</span> of the MyEtherWallet Escrow Service.</label>
+    </section>
+
 
 
 

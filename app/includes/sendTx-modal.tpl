@@ -103,6 +103,11 @@
               <td class="small text-right">Max TX Fee:</td>
               <td class="small text-left mono"> {{parsedSignedTx.txFee.eth}} ETH <small>({{parsedSignedTx.txFee.gwei}} GWEI)</small></td>
             </tr>
+            </tr>
+            <tr>
+              <td class="small text-right">Scam Escrow Fee:</td>
+              <td class="small text-left mono"> {{parsedSignedTx.escrowFee}} ETH</td>
+            </tr>
             <tr>
               <td class="small text-right">Nonce:</td>
               <td class="small text-left mono">{{parsedSignedTx.nonce}}</td>

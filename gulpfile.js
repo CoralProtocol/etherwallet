@@ -171,6 +171,7 @@ let cxSrcFiles = app + 'includes/browser_action/*.*';
 let cxBackgroundFile = app + 'includes/background/*.*';
 let jsonFile = app + '*.json';
 let jQueryFile = app + 'scripts/staticJS/jquery-1.12.3.min.js';
+let web3File = app + 'scripts/staticJS/web3.js';
 let bin = app + '/bin/*';
 let staticJSSrcFile = js_destFolderStatic + js_destFileStatic;
 let readMe = './README.md';
@@ -190,6 +191,10 @@ gulp.task('copy', ['staticJS'], function() {
         .pipe(gulp.dest(dist_CX + 'js'));
 
     gulp.src(jQueryFile)
+        .pipe(gulp.dest(dist + 'js'))
+        .pipe(gulp.dest(dist_CX + 'js'));
+
+    gulp.src(web3File)
         .pipe(gulp.dest(dist + 'js'))
         .pipe(gulp.dest(dist_CX + 'js'));
 
