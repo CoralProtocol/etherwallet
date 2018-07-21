@@ -305,13 +305,13 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
                         .on('transactionHash', function(hash){
                           console.log('method transactionHash', hash)
                         })
-                        sentTransaction.on('receipt', function(receipt){
+                        .on('receipt', function(receipt){
                           console.log('method receipt', receipt)
                         })
-                        sentTransaction.on('confirmation', function(confirmationNumber, receipt){
+                        .on('confirmation', function(confirmationNumber, receipt){
                           console.log('method confirmation', confirmationNumber, receipt)
                         })
-                        sentTransaction.on('error', console.error);
+                        .on('error', console.error);
 
                         console.log('POST EVERYTHING')
                     }
