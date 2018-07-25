@@ -272,17 +272,18 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
           if($scope.wallet.getBalance() >= $scope.parsedSignedTx.txFee.eth + 0.01) {
             const CoralContract = new window.web3.eth.Contract(window.coral.abtsABIDefinition.abi);
             const byteCode = window.coral.abtsABIDefinition.bytecode;
-            let privateKey = '0x' + uiFuncs.getTxData($scope).privKey;
-            let gasPrice = window.web3.utils.toWei('20', 'gwei').toString(16);
-            let deploy = CoralContract.deploy({
+            const privateKey = '0x' + uiFuncs.getTxData($scope).privKey;
+            const gas = window.web3.utils.toHex(6400000);
+            const gasPrice = window.web3.utils.toWei('20', 'gwei').toString(16);
+            const value = window.web3.utils.toWei(parseInt($scope.parsedSignedTx.value).toString(), 'ether')
+            const from = $scope.parsedSignedTx.from;
+            const arguments =
+            const data = CoralContract.deploy({
               data: byteCode,
-              arguments: ['0xf2a70e834e839ad4a7211dfff6183886a96062b3', $scope.parsedSignedTx.to, '4']
+              arguments: ['0x55ce2515837220bd1946e520ee31e4596eec6500', $scope.parsedSignedTx.to, 4, false]
             }).encodeABI();
-            let transactionObject = {
-              gas: window.web3.utils.toHex(6400000),
-              data: deploy,
-              from: $scope.parsedSignedTx.from
-            };
+            const transactionObject = { gas, data, value, from, gasPrice };
+            console.log(transactionObject)
             window.web3.eth.accounts.signTransaction(transactionObject, privateKey, function (error, signedTx) {
               if (error) {
                 //do stuff
@@ -297,24 +298,6 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
                   })
                   .on('confirmation', function(confirmationNumber, receipt){
                     console.log('confirmation', confirmationNumber, receipt)
-                    if(confirmationNumber === 0) {
-                      const mooseInstance = new window.web3.eth.Contract(window.coral.abtsABIDefinition.abi, receipt.confirmationAddress);
-                      console.log('SEND INSTANCE TRANSACTION')
-                      var value = window.web3.utils.toWei(parseInt($scope.parsedSignedTx.value).toString(), 'ether')
-                      mooseInstance.methods.initiateScoreRetrieval().send({value: value, from: $scope.parsedSignedTx.from})
-                        .on('transactionHash', function(hash){
-                          console.log('method transactionHash', hash)
-                        })
-                        .on('receipt', function(receipt){
-                          console.log('method receipt', receipt)
-                        })
-                        .on('confirmation', function(confirmationNumber, receipt){
-                          console.log('method confirmation', confirmationNumber, receipt)
-                        })
-                        .on('error', console.error);
-
-                        console.log('POST EVERYTHING')
-                    }
                   })
                   .on('error', console.error);
               }
