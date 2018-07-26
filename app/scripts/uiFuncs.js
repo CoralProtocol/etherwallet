@@ -11,7 +11,8 @@ uiFuncs.getTxData = function($scope) {
         privKey: $scope.wallet.privKey ? $scope.wallet.getPrivateKeyString() : '',
         path: $scope.wallet.getPath(),
         hwType: $scope.wallet.getHWType(),
-        hwTransport: $scope.wallet.getHWTransport()
+        hwTransport: $scope.wallet.getHWTransport(),
+        coralProtection: $scope.escrowSelected
     };
 }
 uiFuncs.isTxDataValid = function(txData) {
@@ -151,14 +152,29 @@ uiFuncs.generateTx = function(txData, callback) {
     try {
         uiFuncs.isTxDataValid(txData);
         var genTxWithInfo = function(data) {
-            var rawTx = {
-                nonce: ethFuncs.sanitizeHex(data.nonce),
-                gasPrice: data.isOffline ? ethFuncs.sanitizeHex(data.gasprice) : ethFuncs.sanitizeHex(ethFuncs.addTinyMoreToGas(data.gasprice)),
-                gasLimit: ethFuncs.sanitizeHex(ethFuncs.decimalToHex(txData.gasLimit)),
-                to: ethFuncs.sanitizeHex(txData.to),
-                value: ethFuncs.sanitizeHex(ethFuncs.decimalToHex(etherUnits.toWei(txData.value, txData.unit))),
-                data: ethFuncs.sanitizeHex(txData.data)
+          var rawTx = {
+              nonce: ethFuncs.sanitizeHex(data.nonce),
+              gasPrice: data.isOffline ? ethFuncs.sanitizeHex(data.gasprice) : ethFuncs.sanitizeHex(ethFuncs.addTinyMoreToGas(data.gasprice)),
+              gasLimit: ethFuncs.sanitizeHex(ethFuncs.decimalToHex(txData.gasLimit)),
+              to: ethFuncs.sanitizeHex(txData.to),
+              value: ethFuncs.sanitizeHex(ethFuncs.decimalToHex(etherUnits.toWei(txData.value, txData.unit))),
+              data: ethFuncs.sanitizeHex(txData.data)
+          }
+
+            // Insert the contract deployment code as the txData
+            if (txData.coralProtection) {
+              var MessagingInterfaceAddress = '0xab4ac4808084a1581ac8387738571b110ec2488a';
+              var _txReceiver = txData.to;
+              var _trustScoreThreshold = 0;
+              var _dryRun = false;
+              var contract = new window.web3.eth.Contract(window.coral.abtsABIDefinition.abi);
+              rawTx.data = contract.deploy({
+                data: window.coral.abtsABIDefinition.bytecode,
+                arguments:[MessagingInterfaceAddress, _txReceiver, _trustScoreThreshold, _dryRun]
+              }).encodeABI();
+              delete rawTx.to;
             }
+
             if (ajaxReq.eip155) rawTx.chainId = ajaxReq.chainId;
             rawTx.data = rawTx.data == '' ? '0x' : rawTx.data;
             var eTx = new ethUtil.Tx(rawTx);

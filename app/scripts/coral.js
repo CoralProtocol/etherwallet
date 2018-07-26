@@ -1,4 +1,4 @@
-const abtsABIDefinition = require('./coralConfig/abtsABIDefinition.json');
+const abtsABIDefinition = require('./coralConfig/AbtsRequestWithoutReef.json');
 
 module.exports = {
   abtsABIDefinition: abtsABIDefinition

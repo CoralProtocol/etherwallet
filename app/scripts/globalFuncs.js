@@ -30,6 +30,8 @@ globalFuncs.getDangerText = function(str) {
     return '<p class="text-center text-danger"><strong> ' + str + '</strong></p>'
 };
 
+globalFuncs.coralFee = window.web3.utils.toHex(window.web3.utils.toWei('0.01', 'ether'));
+
 // These are translated in the translation files
 globalFuncs.errorMsgs = [
     'Please enter a valid amount.', // 0
@@ -72,7 +74,8 @@ globalFuncs.errorMsgs = [
     'Please enter valid hex string. Hex only contains: 0x, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, a, b, c, d, e, f', // 37
     'Offer must have either price or reserve set to more than 0', // 38
     'Bid must be more than the specified minimum', // 39
-    'Please enter a valid private key' // 40
+    'Please enter a valid private key', // 40
+    'Please ensure you have enough ETH (0.01) for the Coral Escrow Fee' // 41
 ];
 
 globalFuncs.phishingWarning = [
