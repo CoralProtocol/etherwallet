@@ -9,5 +9,8 @@
     },
     "bin": {
         "mew": "bin/startMEW.js"
+    },
+    "dependencies": {
+        "gulp-file-include": "^2.0.1"
     }
 }

@@ -170,7 +170,41 @@ textarea {
   }
 }
 
-.account-help-text {
+.coral-escrow-icon {
+  img:hover + .coral-escrow-text {
+    display: block;
+    opacity: 1;
+    z-index: 999;
+  }
+  img {
+    margin-left: -30px;
+    margin-right: 3px;
+  }
+  &:hover {
+    opacity: 1;
+  }
+  .strong {
+    margin-top: -22px;
+  }
+}
+
+.confirm-coral-escrow {
+  .checkbox-label {
+    margin-left: 1.5rem;
+    font-weight: 400;
+    display: table;
+  }
+  input {
+    float: left;
+    display: inline;
+  }
+  .terms-and-conditions-escrow {
+    text-decoration:underline;
+    display: contents;
+  }
+}
+
+.account-help-text, .coral-escrow-text {
   background: white;
   border-radius: @border-radius;
   border: 1px solid #CDCDCD;
