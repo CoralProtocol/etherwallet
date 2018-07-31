@@ -8,7 +8,7 @@ steps:
       - ./app/scripts/coralConfig/
 
   # Build the dist
-  - name: 'gcr.io/$PROJECT_ID/npm'
+  - name: 'gcr.io/cloud-builders/npm'
     args:
       - run
       - dist
