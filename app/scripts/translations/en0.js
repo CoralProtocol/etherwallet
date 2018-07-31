@@ -322,6 +322,7 @@ ERROR_37                        :  '(error_38) Please enter valid hex string. He
 ERROR_38                        :  '(error_39) Offer must have either price or reserve set to more than 0',
 ERROR_39                        :  '(error_40) Bid must be more than the specified minimum',
 ERROR_40                        :  '(error_41) Please enter a valid private key',
+ERROR_41                        :  '(error_42) Please ensure you have enough ETH (0.01) for the Coral Escrow Fee',
 
 GETH_Balance                    :  '(geth-01) Insufficient balance. Your gas limit * gas price + amount to send exceeds your current balance. Send more ETH to your account or use the "Send Entire Balance" button. If you believe this is in error, try pressing generate again. Required (d+) and got: (d+). [Learn More.](https://myetherwallet.github.io/knowledge-base/transactions/transactions-not-showing-or-pending.html)',
 GETH_Cheap                      :  '(geth-02) Gas price too low for acceptance. Try raising the gas price to 21 GWEI via the dropdown in top-right.',

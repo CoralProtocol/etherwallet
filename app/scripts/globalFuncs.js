@@ -30,8 +30,6 @@ globalFuncs.getDangerText = function(str) {
     return '<p class="text-center text-danger"><strong> ' + str + '</strong></p>'
 };
 
-globalFuncs.coralFee = window.web3.utils.toHex(window.web3.utils.toWei('0.01', 'ether'));
-
 // These are translated in the translation files
 globalFuncs.errorMsgs = [
     'Please enter a valid amount.', // 0
