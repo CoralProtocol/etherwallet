@@ -30,6 +30,9 @@ globalFuncs.getDangerText = function(str) {
     return '<p class="text-center text-danger"><strong> ' + str + '</strong></p>'
 };
 
+globalFuncs.coralFee = new BigNumber(0.01); // In ETH
+globalFuncs.coralGas = new BigNumber(900000);
+
 // These are translated in the translation files
 globalFuncs.errorMsgs = [
     'Please enter a valid amount.', // 0

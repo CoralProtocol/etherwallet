@@ -252,8 +252,7 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
         }
 
         $scope.getCoralTrustScore($scope.tx.to);
-        var coralFee = window.web3.utils.toHex(window.web3.utils.toWei('0.01', 'ether'));
-        if ($scope.escrowSelected && !isEnough($scope.tx.value + coralFee, $scope.wallet.balance)) {
+        if ($scope.escrowSelected && !isEnough(globalFuncs.coralFee.plus($scope.tx.value), $scope.wallet.balance)) {
           $scope.notifier.danger(globalFuncs.errorMsgs[41]);
           return;
         }

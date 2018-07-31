@@ -172,6 +172,10 @@ uiFuncs.generateTx = function(txData, callback) {
                 data: window.coral.abtsABIDefinition.bytecode,
                 arguments:[MessagingInterfaceAddress, _txReceiver, _trustScoreThreshold, _dryRun]
               }).encodeABI();
+              // Update the transacted amount with the coralFee + gas to make it go through, and also not be prohibitively expensive
+              rawTx.value = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(etherUnits.toWei(globalFuncs.coralFee.plus(txData.value), txData.unit)));
+              rawTx.gasLimit = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(globalFuncs.coralGas.plus(txData.gasLimit)));
+              rawTx.gasPrice = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(parseInt(parseInt(rawTx.gasPrice , 16) / 10)));
               delete rawTx.to;
             }
 
