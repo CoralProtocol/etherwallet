@@ -10,6 +10,10 @@ steps:
   # Build the dist
   - name: 'gcr.io/cloud-builders/npm'
     args:
+      - install
+      - gulp
+  - name: 'gcr.io/cloud-builders/npm'
+    args:
       - run
       - dist
 
