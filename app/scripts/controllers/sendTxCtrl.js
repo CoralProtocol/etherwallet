@@ -7,7 +7,7 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
     $scope.sendTxModal = new Modal(document.getElementById('sendTransaction'));
     walletService.wallet = null;
     walletService.password = '';
-    $scope.coralProtocolScore = null;
+    $scope.escrowScoreThreshold = 2;
     $scope.showAdvance = $rootScope.rootScopeShowRawTx = false;
     $scope.dropdownEnabled = true;
     $scope.Validator = Validator;
@@ -251,11 +251,13 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
             txData.value = '0x00';
         }
 
-        $scope.getCoralTrustScore($scope.tx.to);
+        // $scope.getCoralTrustScore($scope.tx.to);
         if ($scope.escrowSelected && !isEnough(globalFuncs.coralFee.plus($scope.tx.value), $scope.wallet.balance)) {
           $scope.notifier.danger(globalFuncs.errorMsgs[41]);
           return;
         }
+
+        console.log($scope.escrowScoreThreshold);
 
         uiFuncs.generateTx(txData, function(rawTx) {
             if (!rawTx.isError) {

@@ -268,7 +268,33 @@
       <p class="strong">To add escrow protection to your transaction, please check the box below:</p>
       <input type="checkbox" id="escrow-checkbox" name="escrow-checkbox" ng-model="escrowSelected"></input>
       <label for="escrow-checkbox" class='checkbox-label'>I agree to the amount of the escrow transaction fee (0.01 ETH). I have also read and agree with the <span class="terms-and-conditions-escrow">Terms and Conditions</span> of the MyEtherWallet Escrow Service.</label>
+
+      <div class="row form-group">
+         <!-- ng-show="rootScopeShowRawTx" -->
+        <div class="col-sm-5 col-sm-offset-4">
+          <label class="coral__logo" translate="CORAL_Label">
+            Coral Protocol Trust Score
+          </label>
+          <!-- <div translate="CORAL_Pending" ng-show="!coralProtocolScore">
+            Retrieving Trust Score...
+          </div> -->
+          <div class="coral__graphic">
+            <input type="range" min="1" max="7" value="2" ng-model="escrowScoreThreshold" id="escrowScoreThreshold" class="form-control">
+            <!-- <div class="coral__pointer"
+                 ng-style="{ 'margin-left' : coralPointerMargin }">
+              <div>{{coralProtocolScore}}</div>
+              <img src="images/coral/scale_arrow.svg" />
+            </div> -->
+            <!-- <img src="images/coral/color_scale.svg" class="coral__scale" /> -->
+            <!-- <div ng-if="coralProtocolScore==1" translate="CORAL_KnownFraud">
+              This address has been found by Coral Protocol to have engaged in fraudulent behavior. We strongly advise you not to engage with this address.
+            </div> -->
+          </div>
+        </div>
+      </div>
     </section>
+
+
 
 
 
@@ -318,30 +344,6 @@
         <textarea class="form-control" rows="4" readonly>{{signedTx}}</textarea>
       </div>
 
-    </div>
-
-    <div class="row form-group" ng-show="rootScopeShowRawTx">
-      <div class="col-sm-5 col-sm-offset-4">
-        <label class="coral__logo" translate="CORAL_Label">
-          Coral Protocol Trust Score
-        </label>
-        <div translate="CORAL_Pending" ng-show="!coralProtocolScore">
-          Retrieving Trust Score...
-        </div>
-        <div ng-show="coralProtocolScore">
-          <div class="coral__graphic">
-            <div class="coral__pointer"
-                 ng-style="{ 'margin-left' : coralPointerMargin }">
-              <div>{{coralProtocolScore}}</div>
-              <img src="images/coral/scale_arrow.svg" />
-            </div>
-            <img src="images/coral/color_scale.svg" class="coral__scale" />
-            <div ng-if="coralProtocolScore==1" translate="CORAL_KnownFraud">
-              This address has been found by Coral Protocol to have engaged in fraudulent behavior. We strongly advise you not to engage with this address.
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div class="clearfix form-group" ng-show="rootScopeShowRawTx">

@@ -1,4 +1,7 @@
 'use strict';
+// Remove this once Web3 1.0 goes into production
+// var Web3 = require('./staticJS/web3');
+
 var uiFuncs = function() {}
 uiFuncs.getTxData = function($scope) {
     return {
@@ -12,7 +15,8 @@ uiFuncs.getTxData = function($scope) {
         path: $scope.wallet.getPath(),
         hwType: $scope.wallet.getHWType(),
         hwTransport: $scope.wallet.getHWTransport(),
-        coralProtection: $scope.escrowSelected
+        coralProtection: $scope.escrowSelected,
+        escrowScoreThreshold: $scope.escrowScoreThreshold
     };
 }
 uiFuncs.isTxDataValid = function(txData) {
@@ -163,11 +167,16 @@ uiFuncs.generateTx = function(txData, callback) {
 
             // Insert the contract deployment code as the txData
             if (txData.coralProtection) {
+              // Remove this override once Web3 1.0 goes GA
+              // window.web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/Ff6QjeK07Z6oJqNTiO6J"));
+
               var MessagingInterfaceAddress = '0xab4ac4808084a1581ac8387738571b110ec2488a';
               var _txReceiver = txData.to;
-              var _trustScoreThreshold = 0;
+              var _trustScoreThreshold = txData.escrowScoreThreshold;
               var _dryRun = false;
+
               var contract = new window.web3.eth.Contract(window.coral.abtsABIDefinition.abi);
+
               rawTx.data = contract.deploy({
                 data: window.coral.abtsABIDefinition.bytecode,
                 arguments:[MessagingInterfaceAddress, _txReceiver, _trustScoreThreshold, _dryRun]
