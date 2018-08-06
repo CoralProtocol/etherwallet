@@ -34,3 +34,10 @@
 </section>
 
 @@include( '../includes/footer.tpl', { "site": "mew" } )
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+    window.web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/a34a6716d0e746458f49cf08271d452f"));
+  });
+</script>
