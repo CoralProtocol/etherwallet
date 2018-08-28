@@ -105,8 +105,8 @@
             </tr>
             </tr>
             <tr>
-              <td class="small text-right">Scam Escrow Fee:</td>
-              <td class="small text-left mono"> {{parsedSignedTx.escrowFee}} ETH</td>
+              <td class="small text-right">Fraud Prevention Fee:</td>
+              <td class="small text-left mono"> {{parsedSignedTx.fraudPreventionFee}} ETH</td>
             </tr>
             <tr>
               <td class="small text-right">Nonce:</td>
