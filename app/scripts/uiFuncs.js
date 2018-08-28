@@ -15,8 +15,7 @@ uiFuncs.getTxData = function($scope) {
         path: $scope.wallet.getPath(),
         hwType: $scope.wallet.getHWType(),
         hwTransport: $scope.wallet.getHWTransport(),
-        coralProtection: $scope.escrowSelected,
-        escrowScoreThreshold: $scope.escrowScoreThreshold
+        fraudPrevention: $scope.fraudPreventionSelected,
     };
 }
 uiFuncs.isTxDataValid = function(txData) {
@@ -166,13 +165,10 @@ uiFuncs.generateTx = function(txData, callback) {
           }
 
             // Insert the contract deployment code as the txData
-            if (txData.coralProtection) {
-              // Remove this override once Web3 1.0 goes GA
-              // window.web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/Ff6QjeK07Z6oJqNTiO6J"));
-
+            if (txData.fraudPrevention) {
               var MessagingInterfaceAddress = '0xab4ac4808084a1581ac8387738571b110ec2488a';
               var _txReceiver = txData.to;
-              var _trustScoreThreshold = txData.escrowScoreThreshold;
+              var _trustScoreThreshold = 2.9;
               var _dryRun = false;
 
               var contract = new window.web3.eth.Contract(window.coral.abtsABIDefinition.abi);

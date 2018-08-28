@@ -76,7 +76,7 @@ globalFuncs.errorMsgs = [
     'Offer must have either price or reserve set to more than 0', // 38
     'Bid must be more than the specified minimum', // 39
     'Please enter a valid private key', // 40
-    'Please ensure you have enough ETH (0.01) for the Coral Escrow Fee' // 41
+    'Please ensure you have enough ETH (0.01) for the Fraud Prevention Fee' // 41
 ];
 
 globalFuncs.phishingWarning = [

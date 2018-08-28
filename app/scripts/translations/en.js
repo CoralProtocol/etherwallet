@@ -23,7 +23,7 @@ CONTRACT_Warning_3              :  'You are about to **execute a function on con
 CORAL_KnownFraud               :  'This address has been found by the Coral Protocol to have engaged in fraudulent behavior. We strongly advise you not to engage with this address.',
 CORAL_Label                     :  'Coral Protocol Trust Score',
 CORAL_Pending                   :  'Retrieving Trust Score...',
-CORAL_ESCROW_Desc           : 'Escrow Protection is an optional service offered by MyEtherWallet to protect your funds in the case of fraud',
+CORAL_FRAUD_PREVENTION_Desc           : 'Fraud Prevention is an optional service offered by MyEtherWallet to protect your funds in the case of fraud',
 
 SEND_Helper_Contract            :  'In most cases you should leave this as 0.',
 SEND_ViewOnly                   :  'You cannot send with only your address. You must use one of the other options to unlock your wallet in order to send.',
@@ -322,7 +322,7 @@ ERROR_37                        :  '(error_38) Please enter valid hex string. He
 ERROR_38                        :  '(error_39) Offer must have either price or reserve set to more than 0',
 ERROR_39                        :  '(error_40) Bid must be more than the specified minimum',
 ERROR_40                        :  '(error_41) Please enter a valid private key',
-ERROR_41                        :  '(error_42) Please ensure you have enough ETH (0.01) for the Coral Escrow Fee',
+ERROR_41                        :  '(error_42) Please ensure you have enough ETH (0.01) for the Coral Fraud Prevention Fee',
 
 GETH_Balance                    :  '(geth-01) Insufficient balance. Your gas limit * gas price + amount to send exceeds your current balance. Send more ETH to your account or use the "Send Entire Balance" button. If you believe this is in error, try pressing generate again. Required (d+) and got: (d+). [Learn More.](https://myetherwallet.github.io/knowledge-base/transactions/transactions-not-showing-or-pending.html)',
 GETH_Cheap                      :  '(geth-02) Gas price too low for acceptance. Try raising the gas price to 21 GWEI via the dropdown in top-right.',

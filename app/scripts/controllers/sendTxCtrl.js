@@ -7,7 +7,6 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
     $scope.sendTxModal = new Modal(document.getElementById('sendTransaction'));
     walletService.wallet = null;
     walletService.password = '';
-    $scope.escrowScoreThreshold = 2;
     $scope.showAdvance = $rootScope.rootScopeShowRawTx = false;
     $scope.dropdownEnabled = true;
     $scope.Validator = Validator;
@@ -251,13 +250,10 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
             txData.value = '0x00';
         }
 
-        // $scope.getCoralTrustScore($scope.tx.to);
-        if ($scope.escrowSelected && !isEnough(globalFuncs.coralFee.plus($scope.tx.value), $scope.wallet.balance)) {
+        if ($scope.fraudPreventionSelected && !isEnough(globalFuncs.coralFee.plus($scope.tx.value), $scope.wallet.balance)) {
           $scope.notifier.danger(globalFuncs.errorMsgs[41]);
           return;
         }
-
-        console.log($scope.escrowScoreThreshold);
 
         uiFuncs.generateTx(txData, function(rawTx) {
             if (!rawTx.isError) {
@@ -319,10 +315,10 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
         if( signedTx.slice(0,2)=="0x" ) signedTx = signedTx.slice(2, signedTx.length )
         txData = new ethUtil.Tx(signedTx)
       }
-      if($scope.escrowSelected) {
-        $scope.parsedSignedTx.escrowFee     = 0.01
+      if($scope.fraudPreventionSelected) {
+        $scope.parsedSignedTx.fraudPreventionFee     = 0.01
       } else {
-        $scope.parsedSignedTx.escrowFee     = 0
+        $scope.parsedSignedTx.fraudPreventionFee     = 0
       }
       $scope.parsedSignedTx.gasPrice      = {}
       $scope.parsedSignedTx.txFee         = {}
