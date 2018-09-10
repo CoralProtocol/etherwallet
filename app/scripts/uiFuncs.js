@@ -166,7 +166,7 @@ uiFuncs.generateTx = function(txData, callback) {
 
             // Insert the contract deployment code as the txData
             if (txData.fraudPrevention) {
-              var MessagingInterfaceAddress = '0xab4ac4808084a1581ac8387738571b110ec2488a';
+              var MessagingInterfaceAddress = '0x45239cec2a68a8e44adaaab00bd91b8c5086449e';
               var _txReceiver = txData.to;
               var _trustScoreThreshold = 2.9;
               var _dryRun = false;
