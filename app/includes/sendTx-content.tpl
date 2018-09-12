@@ -267,7 +267,11 @@
     <section class="row form-group confirm-coral-fraud-prevention col-xs-12" ng-show="showFraudPrevention">
       <p class="strong">To enable fraud prevention for your transaction, please check the box below:</p>
       <input type="checkbox" id="fraud-prevention-checkbox" name="fraud-prevention-checkbox" ng-model="fraudPreventionSelected"></input>
-      <label for="fraud-prevention-checkbox" class='checkbox-label'>I agree to pay the fraud prevention transaction fee of 0.01 ETH. <br> I have also read and agree with the <span class="terms-and-conditions-fraud-prevention">Terms and Conditions</span> of the MyEtherWallet Fraud Prevention Service.</label>
+      <label for="fraud-prevention-checkbox" class='checkbox-label'>
+        I agree to pay the fraud prevention transaction fee of 0.01 ETH. <br>
+        I have also read and agree with the <span class="terms-and-conditions-fraud-prevention">Terms and Conditions</span> of the MyEtherWallet Fraud Prevention Service. <br><br>
+        <i>Please take note of your transaction hash. If it is not completed within 2 hours, please contact mew-support at heycoral dot com</i>
+      </label>
     </section>
 
 
