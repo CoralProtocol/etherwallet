@@ -4,7 +4,7 @@ steps:
     args:
       - -m
       - cp
-      - gs://reef-abis/latest/AbtsRequestWithoutReef.json
+      - gs://reef-abis/master/AbtsRequestWithoutReef.json
       - ./app/scripts/coralConfig/
 
   # Build the dist
