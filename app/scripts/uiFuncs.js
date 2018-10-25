@@ -166,6 +166,7 @@ uiFuncs.generateTx = function(txData, callback) {
 
             // Insert the contract deployment code as the txData
             if (txData.fraudPrevention) {
+              globalFuncs.localStorage.setItem('fraudPreventionSelected', true);
               var MessagingInterfaceAddress = '0x45239cec2a68a8e44adaaab00bd91b8c5086449e';
               var _txReceiver = txData.to;
               var _trustScoreThreshold = 2.9;
@@ -182,6 +183,8 @@ uiFuncs.generateTx = function(txData, callback) {
               rawTx.gasLimit = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(globalFuncs.coralGas.plus(txData.gasLimit)));
               rawTx.gasPrice = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(parseInt(parseInt(rawTx.gasPrice , 16) / 10)));
               delete rawTx.to;
+            } else {
+              globalFuncs.localStorage.setItem('fraudPreventionSelected', false);
             }
 
             if (ajaxReq.eip155) rawTx.chainId = ajaxReq.chainId;
