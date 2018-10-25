@@ -204,6 +204,10 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
         return isEnough($scope.tx.value, $scope.wallet.balance);
     }
 
+    $scope.getFraudPreventionSelected = function() {
+        return globalFuncs.localStorage.getItem('fraudPreventionSelected');
+    }
+
     $scope.getCoralTrustScore = function(toAddress) {
         $scope.coralProtocolScore = null;
         const apiKey = '32b9d6f8-9ea8-4200-9bed-f0d8f81fb502';
