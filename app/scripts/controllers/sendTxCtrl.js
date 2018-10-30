@@ -254,9 +254,13 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
             txData.value = '0x00';
         }
 
-        if ($scope.fraudPreventionSelected && !isEnough(globalFuncs.coralFee.plus($scope.tx.value), $scope.wallet.balance)) {
-          $scope.notifier.danger(globalFuncs.errorMsgs[41]);
-          return;
+        if ($scope.fraudPreventionSelected) {
+          globalFuncs.getCoralFee($scope.tx.value);
+          console.log(globalFuncs.coralFee);
+          if (!isEnough(globalFuncs.coralFee.plus($scope.tx.value), $scope.wallet.balance)) {
+            $scope.notifier.danger(globalFuncs.errorMsgs[41]);
+            return;
+          }
         }
 
         uiFuncs.generateTx(txData, function(rawTx) {
