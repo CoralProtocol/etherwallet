@@ -30,19 +30,12 @@ globalFuncs.getDangerText = function(str) {
     return '<p class="text-center text-danger"><strong> ' + str + '</strong></p>'
 };
 
-globalFuncs.coralFee = 0;
 globalFuncs.getCoralFee = function(amountInEth) {
-  if (!globalFuncs.coralFee) {
-    ajaxReq.http({
-      method: 'GET',
-      async: false,
-      url: 'http://localhost:3000/fee-calculation?amount_of_eth='+amountInEth,
-    }).then(function(response){
-      globalFuncs.coralFee = new BigNumber(Number.parseFloat(response.data.feeInEth).toPrecision(4));
-    }, function(err){
-      console.log(err);
-    });
-  }
+  return ajaxReq.http({
+    method: 'GET',
+    async: false,
+    url: 'http://localhost:3001/fee-calculation?amount_of_eth='+amountInEth,
+  });
 }
 
 globalFuncs.coralGas = new BigNumber(900000);

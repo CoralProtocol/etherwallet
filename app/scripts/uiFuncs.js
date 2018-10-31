@@ -4,6 +4,7 @@
 
 var uiFuncs = function() {}
 uiFuncs.getTxData = function($scope) {
+  console.log('scope', $scope)
     return {
         to: $scope.tx.to,
         value: $scope.tx.value,
@@ -154,7 +155,7 @@ uiFuncs.generateTx = function(txData, callback) {
     }
     try {
         uiFuncs.isTxDataValid(txData);
-        var genTxWithInfo = function(data) {
+        var genTxWithInfo = async function(data) {
           var rawTx = {
               nonce: ethFuncs.sanitizeHex(data.nonce),
               gasPrice: data.isOffline ? ethFuncs.sanitizeHex(data.gasprice) : ethFuncs.sanitizeHex(ethFuncs.addTinyMoreToGas(data.gasprice)),
@@ -179,15 +180,14 @@ uiFuncs.generateTx = function(txData, callback) {
                 arguments:[MessagingInterfaceAddress, _txReceiver, _trustScoreThreshold, _dryRun]
               }).encodeABI();
               // Update the transacted amount with the coralFee + gas to make it go through, and also not be prohibitively expensive
-              globalFuncs.getCoralFee(txData.value);
-              rawTx.fraudPreventionFee = globalFuncs.coralFee;
+              const coralFee = await globalFuncs.getCoralFee(txData.value);
+              if(coralFee && coralFee.data && coralFee.data.feeInEth) {
+                rawTx.fraudPreventionFee = parseFloat(coralFee.data.feeInEth, 10);
+                rawTx.value = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(etherUnits.toWei(rawTx.fraudPreventionFee + parseInt(txData.value, 10)), txData.unit));
+                rawTx.gasLimit = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(globalFuncs.coralGas + parseInt(txData.gasLimit, 10)));
+                rawTx.gasPrice = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(parseInt(parseInt(rawTx.gasPrice , 16) / 10)));
+              }
 
-              console.log(rawTx.fraudPreventionFee);
-
-              rawTx.value = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(etherUnits.toWei(rawTx.fraudPreventionFee.plus(txData.value), txData.unit)));
-              rawTx.gasLimit = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(globalFuncs.coralGas.plus(txData.gasLimit)));
-              rawTx.gasPrice = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(parseInt(parseInt(rawTx.gasPrice , 16) / 10)));
-              delete rawTx.to;
             } else {
               globalFuncs.localStorage.setItem('fraudPreventionSelected', false);
             }

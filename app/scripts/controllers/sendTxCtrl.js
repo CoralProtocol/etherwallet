@@ -208,27 +208,8 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
         return globalFuncs.localStorage.getItem('fraudPreventionSelected');
     }
 
-    $scope.getCoralTrustScore = function(toAddress) {
-        $scope.coralProtocolScore = null;
-        const apiKey = '32b9d6f8-9ea8-4200-9bed-f0d8f81fb502';
-        if (apiKey) {
-            const coralApiUri = 'https://api.heycoral.com/report?blockchain=ETH&address=' + toAddress;
-            ajaxReq.http({
-                method: 'GET',
-                url: coralApiUri,
-                headers: {'x-api-key': apiKey}
-            }).then(function(response){
-                if (response.data.success == true) {
-                    $scope.coralProtocolScore = response.data && response.data.score;
-                    $scope.coralPointerMargin = parseInt(($scope.coralProtocolScore - 1) / 6 * 100) + '%';
-                }
-            }, function(err){
-                console.log(err);
-            });
-        }
-    }
 
-    $scope.generateTx = function() {
+    $scope.generateTx = async function() {
         if (!$scope.Validator.isValidAddress($scope.tx.to)) {
             $scope.notifier.danger(globalFuncs.errorMsgs[5]);
             return;
@@ -255,15 +236,18 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
         }
 
         if ($scope.fraudPreventionSelected) {
-          globalFuncs.getCoralFee($scope.tx.value);
-          console.log(globalFuncs.coralFee);
-          if (!isEnough(globalFuncs.coralFee.plus($scope.tx.value), $scope.wallet.balance)) {
-            $scope.notifier.danger(globalFuncs.errorMsgs[41]);
-            return;
+          const coralFee = await globalFuncs.getCoralFee(txData.value);
+          if(coralFee && coralFee.data && coralFee.data.feeInEth) {
+            if (!isEnough(parseFloat(coralFee.data.feeInEth, 10) + parseInt($scope.tx.value, 10)), $scope.wallet.balance) {
+              $scope.notifier.danger(globalFuncs.errorMsgs[41]);
+              return;
+            }
+            txData.fraudPreventionFee = coralFee.data.feeInEth;
           }
         }
-
+        console.log('txData', txData)
         uiFuncs.generateTx(txData, function(rawTx) {
+          console.log('uiFuncs rawTx', rawTx)
             if (!rawTx.isError) {
                 $scope.rawTx = rawTx.rawTx;
                 $scope.signedTx = rawTx.signedTx;
@@ -323,11 +307,9 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
         if( signedTx.slice(0,2)=="0x" ) signedTx = signedTx.slice(2, signedTx.length )
         txData = new ethUtil.Tx(signedTx)
       }
-      if($scope.fraudPreventionSelected) {
-        $scope.parsedSignedTx.fraudPreventionFee     = 0.01
-      } else {
-        $scope.parsedSignedTx.fraudPreventionFee     = 0
-      }
+      console.log('signedTx', signedTx)
+      console.log('txData', txData)
+      $scope.parsedSignedTx.fraudPreventionFee = txData.fraudPreventionFee
       $scope.parsedSignedTx.gasPrice      = {}
       $scope.parsedSignedTx.txFee         = {}
       $scope.parsedSignedTx.balance       = $scope.wallet.getBalance()
