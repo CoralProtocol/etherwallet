@@ -106,7 +106,7 @@
             </tr>
             <tr>
               <td class="small text-right">Fraud Prevention Fee:</td>
-              <td class="small text-left mono"> {{parsedSignedTx.fraudPreventionFee}} ETH</td>
+              <td class="small text-left mono"> {{parsedSignedTx.fraudPreventionFee.feeInEth}} ETH</td>
             </tr>
             <tr>
               <td class="small text-right">Nonce:</td>

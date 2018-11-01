@@ -4,7 +4,6 @@
 
 var uiFuncs = function() {}
 uiFuncs.getTxData = function($scope) {
-  console.log('scope', $scope)
     return {
         to: $scope.tx.to,
         value: $scope.tx.value,
@@ -156,6 +155,7 @@ uiFuncs.generateTx = function(txData, callback) {
     try {
         uiFuncs.isTxDataValid(txData);
         var genTxWithInfo = async function(data) {
+          console.log(1)
           var rawTx = {
               nonce: ethFuncs.sanitizeHex(data.nonce),
               gasPrice: data.isOffline ? ethFuncs.sanitizeHex(data.gasprice) : ethFuncs.sanitizeHex(ethFuncs.addTinyMoreToGas(data.gasprice)),
@@ -164,30 +164,17 @@ uiFuncs.generateTx = function(txData, callback) {
               value: ethFuncs.sanitizeHex(ethFuncs.decimalToHex(etherUnits.toWei(txData.value, txData.unit))),
               data: ethFuncs.sanitizeHex(txData.data)
           }
+          console.log(2)
 
             // Insert the contract deployment code as the txData
             if (txData.fraudPrevention) {
               globalFuncs.localStorage.setItem('fraudPreventionSelected', true);
-              var MessagingInterfaceAddress = '0xab4ac4808084a1581ac8387738571b110ec2488a';
-              var _txReceiver = txData.to;
-              var _trustScoreThreshold = 2.9;
-              var _dryRun = false;
 
-              var contract = new window.web3.eth.Contract(window.coral.abtsABIDefinition.abi);
-
-              rawTx.data = contract.deploy({
-                data: window.coral.abtsABIDefinition.bytecode,
-                arguments:[MessagingInterfaceAddress, _txReceiver, _trustScoreThreshold, _dryRun]
-              }).encodeABI();
-              // Update the transacted amount with the coralFee + gas to make it go through, and also not be prohibitively expensive
               const coralFee = await globalFuncs.getCoralFee(txData.value);
               if(coralFee && coralFee.data && coralFee.data.feeInEth) {
-                rawTx.fraudPreventionFee = parseFloat(coralFee.data.feeInEth, 10);
-                rawTx.value = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(etherUnits.toWei(rawTx.fraudPreventionFee + parseInt(txData.value, 10)), txData.unit));
-                rawTx.gasLimit = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(globalFuncs.coralGas + parseInt(txData.gasLimit, 10)));
-                rawTx.gasPrice = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(parseInt(parseInt(rawTx.gasPrice , 16) / 10)));
+                rawTx.fraudPreventionFee = coralFee.data;
               }
-
+              console.log(3)
             } else {
               globalFuncs.localStorage.setItem('fraudPreventionSelected', false);
             }
@@ -195,6 +182,7 @@ uiFuncs.generateTx = function(txData, callback) {
             if (ajaxReq.eip155) rawTx.chainId = ajaxReq.chainId;
             rawTx.data = rawTx.data == '' ? '0x' : rawTx.data;
             var eTx = new ethUtil.Tx(rawTx);
+            console.log(4)
             if ((typeof txData.hwType != "undefined") && (txData.hwType == "ledger")) {
                 var app = new ledgerEth(txData.hwTransport);
                 var EIP155Supported = false;
@@ -237,10 +225,16 @@ uiFuncs.generateTx = function(txData, callback) {
             } else if ((typeof txData.hwType != "undefined") && (txData.hwType == "secalot")) {
                 uiFuncs.signTxSecalot(eTx, rawTx, txData, callback);
             } else {
+                console.log(5)
+                console.log(txData)
                 eTx.sign(new Buffer(txData.privKey, 'hex'));
+                console.log(6)
                 rawTx.rawTx = JSON.stringify(rawTx);
+                console.log(7)
                 rawTx.signedTx = '0x' + eTx.serialize().toString('hex');
+                console.log(8)
                 rawTx.isError = false;
+                console.log(9)
                 if (callback !== undefined) callback(rawTx);
             }
         }
@@ -276,6 +270,7 @@ uiFuncs.sendTx = function(signedTx, callback) {
     // check for web3 late signed tx
     if (signedTx.slice(0, 2) !== '0x') {
         var txParams = JSON.parse(signedTx)
+
         window.web3.eth.sendTransaction(txParams, function(err, txHash) {
             if (err) {
                 return callback({
@@ -289,6 +284,7 @@ uiFuncs.sendTx = function(signedTx, callback) {
         });
         return
     }
+    console.log('send tx signedTx', signedTx)
 
     ajaxReq.sendRawTx(signedTx, function(data) {
         var resp = {};

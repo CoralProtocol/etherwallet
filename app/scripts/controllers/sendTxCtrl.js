@@ -242,12 +242,11 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
               $scope.notifier.danger(globalFuncs.errorMsgs[41]);
               return;
             }
-            txData.fraudPreventionFee = coralFee.data.feeInEth;
+            txData.fraudPreventionFee = coralFee.data;
           }
         }
-        console.log('txData', txData)
+
         uiFuncs.generateTx(txData, function(rawTx) {
-          console.log('uiFuncs rawTx', rawTx)
             if (!rawTx.isError) {
                 $scope.rawTx = rawTx.rawTx;
                 $scope.signedTx = rawTx.signedTx;
@@ -262,22 +261,76 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
 
     $scope.sendTx = function() {
         $scope.sendTxModal.close();
-        uiFuncs.sendTx($scope.signedTx, function(resp) {
-          if (!resp.isError) {
-              var checkTxLink = "https://www.myetherwallet.com?txHash=" + resp.data + "#check-tx-status";
-              var txHashLink = $scope.ajaxReq.blockExplorerTX.replace("[[txHash]]", resp.data);
-              var emailBody = 'I%20was%20trying%20to..............%0A%0A%0A%0ABut%20I%27m%20confused%20because...............%0A%0A%0A%0A%0A%0ATo%20Address%3A%20https%3A%2F%2Fetherscan.io%2Faddress%2F' + $scope.tx.to + '%0AFrom%20Address%3A%20https%3A%2F%2Fetherscan.io%2Faddress%2F' + $scope.wallet.getAddressString() + '%0ATX%20Hash%3A%20https%3A%2F%2Fetherscan.io%2Ftx%2F' + resp.data + '%0AAmount%3A%20' + $scope.tx.value + '%20' + $scope.unitReadable + '%0ANode%3A%20' + $scope.ajaxReq.type + '%0AToken%20To%20Addr%3A%20' + $scope.tokenTx.to + '%0AToken%20Amount%3A%20' + $scope.tokenTx.value + '%20' + $scope.unitReadable + '%0AData%3A%20' + $scope.tx.data + '%0AGas%20Limit%3A%20' + $scope.tx.gasLimit + '%0AGas%20Price%3A%20' + $scope.tx.gasPrice;
-              var verifyTxBtn = $scope.ajaxReq.type != nodes.nodeTypes.Custom ? '<a class="btn btn-xs btn-info" href="' + txHashLink + '" class="strong" target="_blank" rel="noopener noreferrer">Verify Transaction</a>' : '';
-              var checkTxBtn = '<a class="btn btn-xs btn-info" href="' + checkTxLink + '" target="_blank" rel="noopener noreferrer"> Check TX Status </a>';
-              var emailBtn = '<a class="btn btn-xs btn-info " href="mailto:support@myetherwallet.com?Subject=Issue%20regarding%20my%20TX%20&Body=' + emailBody + '" target="_blank" rel="noopener noreferrer">Confused? Email Us.</a>';
-              var completeMsg = '<p>' + globalFuncs.successMsgs[2] + '<strong>' + resp.data + '</strong></p><p>' + verifyTxBtn + ' ' + checkTxBtn + '</p>';
-              $scope.notifier.success(completeMsg, 0);
-              $scope.wallet.setBalance(applyScope);
-              if ($scope.tx.sendMode == 'token') $scope.wallet.tokenObjs[$scope.tokenTx.id].setBalance();
-          } else {
-              $scope.notifier.danger(resp.error);
-          }
-      });
+        console.log('$scope', $scope)
+        if($scope.tx.sendMode !== 'token' && $scope.parsedSignedTx && $scope.parsedSignedTx.fraudPreventionFee && parseFloat($scope.parsedSignedTx.fraudPreventionFee.feeInEth, 10) > 0) {
+          // make coral smart contract web3 call
+          var escrowContractAddress = '0x6d88bd5cfd43796aee02cd8278b57b312d47f54b';
+          var CoralEscrowContract = new window.web3.eth.Contract(window.coral.abtsABIDefinition.abi, escrowContractAddress);
+          var to = $scope.tx.to;
+          var threshold = 1;
+          var feeInWei = $scope.parsedSignedTx.fraudPreventionFee.feeInWei;
+          var query = CoralEscrowContract.methods['deposit'](to, threshold, feeInWei);
+          var encodedABI = query.encodeABI();
+
+          var tx = {
+            from: $scope.parsedSignedTx.from,
+            value: $scope.tx.value,
+            to: escrowContractAddress,
+            data: encodedABI,
+            gasLimit: parseInt($scope.tx.gasLimit, 10),
+            privKey: $scope.wallet.privKey ? $scope.wallet.getPrivateKeyString() : '',
+          };
+          console.log('generate coral tx', tx)
+          uiFuncs.generateTx(tx, function(rawTx) {
+              if (!rawTx.isError) {
+                  $scope.rawTx = rawTx.rawTx;
+                  $scope.signedTx = rawTx.signedTx;
+                  $rootScope.rootScopeShowRawTx = true
+                  console.log('send coral tx', rawTx)
+                  console.log('send coral tx', rawTx)
+                  uiFuncs.sendTx($scope.signedTx, function(resp) {
+                    console.log('CORAL SIGNED TX', $scope.signedTx)
+                    console.log('resp', resp)
+                    if (!resp.isError) {
+                          var checkTxLink = "https://www.myetherwallet.com?txHash=" + resp.data + "#check-tx-status";
+                          var txHashLink = $scope.ajaxReq.blockExplorerTX.replace("[[txHash]]", resp.data);
+                          var emailBody = 'I%20was%20trying%20to..............%0A%0A%0A%0ABut%20I%27m%20confused%20because...............%0A%0A%0A%0A%0A%0ATo%20Address%3A%20https%3A%2F%2Fetherscan.io%2Faddress%2F' + $scope.tx.to + '%0AFrom%20Address%3A%20https%3A%2F%2Fetherscan.io%2Faddress%2F' + $scope.wallet.getAddressString() + '%0ATX%20Hash%3A%20https%3A%2F%2Fetherscan.io%2Ftx%2F' + resp.data + '%0AAmount%3A%20' + $scope.tx.value + '%20' + $scope.unitReadable + '%0ANode%3A%20' + $scope.ajaxReq.type + '%0AToken%20To%20Addr%3A%20' + $scope.tokenTx.to + '%0AToken%20Amount%3A%20' + $scope.tokenTx.value + '%20' + $scope.unitReadable + '%0AData%3A%20' + $scope.tx.data + '%0AGas%20Limit%3A%20' + $scope.tx.gasLimit + '%0AGas%20Price%3A%20' + $scope.tx.gasPrice;
+                          var verifyTxBtn = $scope.ajaxReq.type != nodes.nodeTypes.Custom ? '<a class="btn btn-xs btn-info" href="' + txHashLink + '" class="strong" target="_blank" rel="noopener noreferrer">Verify Transaction</a>' : '';
+                          var checkTxBtn = '<a class="btn btn-xs btn-info" href="' + checkTxLink + '" target="_blank" rel="noopener noreferrer"> Check TX Status </a>';
+                          var emailBtn = '<a class="btn btn-xs btn-info " href="mailto:support@myetherwallet.com?Subject=Issue%20regarding%20my%20TX%20&Body=' + emailBody + '" target="_blank" rel="noopener noreferrer">Confused? Email Us.</a>';
+                          var completeMsg = '<p>' + globalFuncs.successMsgs[2] + '<strong>' + resp.data + '</strong></p><p>' + verifyTxBtn + ' ' + checkTxBtn + '</p>';
+                          $scope.notifier.success(completeMsg, 0);
+                          $scope.wallet.setBalance(applyScope);
+                          if ($scope.tx.sendMode == 'token') $scope.wallet.tokenObjs[$scope.tokenTx.id].setBalance();
+                    } else {
+                        $scope.notifier.danger(resp.error);
+                    }
+                  });
+              } else {
+                  $rootScope.rootScopeShowRawTx = false;
+                  $scope.notifier.danger(rawTx.error);
+              }
+              if (!$scope.$$phase) $scope.$apply();
+          });
+        } else {
+          uiFuncs.sendTx($scope.signedTx, function(resp) {
+            if (!resp.isError) {
+                  var checkTxLink = "https://www.myetherwallet.com?txHash=" + resp.data + "#check-tx-status";
+                  var txHashLink = $scope.ajaxReq.blockExplorerTX.replace("[[txHash]]", resp.data);
+                  var emailBody = 'I%20was%20trying%20to..............%0A%0A%0A%0ABut%20I%27m%20confused%20because...............%0A%0A%0A%0A%0A%0ATo%20Address%3A%20https%3A%2F%2Fetherscan.io%2Faddress%2F' + $scope.tx.to + '%0AFrom%20Address%3A%20https%3A%2F%2Fetherscan.io%2Faddress%2F' + $scope.wallet.getAddressString() + '%0ATX%20Hash%3A%20https%3A%2F%2Fetherscan.io%2Ftx%2F' + resp.data + '%0AAmount%3A%20' + $scope.tx.value + '%20' + $scope.unitReadable + '%0ANode%3A%20' + $scope.ajaxReq.type + '%0AToken%20To%20Addr%3A%20' + $scope.tokenTx.to + '%0AToken%20Amount%3A%20' + $scope.tokenTx.value + '%20' + $scope.unitReadable + '%0AData%3A%20' + $scope.tx.data + '%0AGas%20Limit%3A%20' + $scope.tx.gasLimit + '%0AGas%20Price%3A%20' + $scope.tx.gasPrice;
+                  var verifyTxBtn = $scope.ajaxReq.type != nodes.nodeTypes.Custom ? '<a class="btn btn-xs btn-info" href="' + txHashLink + '" class="strong" target="_blank" rel="noopener noreferrer">Verify Transaction</a>' : '';
+                  var checkTxBtn = '<a class="btn btn-xs btn-info" href="' + checkTxLink + '" target="_blank" rel="noopener noreferrer"> Check TX Status </a>';
+                  var emailBtn = '<a class="btn btn-xs btn-info " href="mailto:support@myetherwallet.com?Subject=Issue%20regarding%20my%20TX%20&Body=' + emailBody + '" target="_blank" rel="noopener noreferrer">Confused? Email Us.</a>';
+                  var completeMsg = '<p>' + globalFuncs.successMsgs[2] + '<strong>' + resp.data + '</strong></p><p>' + verifyTxBtn + ' ' + checkTxBtn + '</p>';
+                  $scope.notifier.success(completeMsg, 0);
+                  $scope.wallet.setBalance(applyScope);
+                  if ($scope.tx.sendMode == 'token') $scope.wallet.tokenObjs[$scope.tokenTx.id].setBalance();
+            } else {
+                $scope.notifier.danger(resp.error);
+            }
+          });
+        }
+
     }
 
     $scope.transferAllBalance = function() {
@@ -307,24 +360,22 @@ var sendTxCtrl = function($scope, $sce, walletService, $rootScope) {
         if( signedTx.slice(0,2)=="0x" ) signedTx = signedTx.slice(2, signedTx.length )
         txData = new ethUtil.Tx(signedTx)
       }
-      console.log('signedTx', signedTx)
-      console.log('txData', txData)
-      $scope.parsedSignedTx.fraudPreventionFee = txData.fraudPreventionFee
-      $scope.parsedSignedTx.gasPrice      = {}
-      $scope.parsedSignedTx.txFee         = {}
-      $scope.parsedSignedTx.balance       = $scope.wallet.getBalance()
-      $scope.parsedSignedTx.from          = isJSON ? $scope.wallet.getChecksumAddressString() : ethFuncs.sanitizeHex(ethUtil.toChecksumAddress(txData.from.toString('hex')))
-      $scope.parsedSignedTx.to            = ethFuncs.sanitizeHex(ethUtil.toChecksumAddress(txData.to.toString('hex')))
-      $scope.parsedSignedTx.value         = (txData.value=='0x'||txData.value==''||txData.value==null) ? '0' : etherUnits.toEther(new BigNumber(ethFuncs.sanitizeHex(txData.value.toString('hex'))).toString(), 'wei' )
-      $scope.parsedSignedTx.gasLimit      = new BigNumber(ethFuncs.sanitizeHex(txData.gasLimit.toString('hex'))).toString()
-      $scope.parsedSignedTx.gasPrice.wei  = new BigNumber(ethFuncs.sanitizeHex(txData.gasPrice.toString('hex'))).toString()
-      $scope.parsedSignedTx.gasPrice.gwei = new BigNumber(ethFuncs.sanitizeHex(txData.gasPrice.toString('hex'))).div(etherUnits.getValueOfUnit('gwei')).toString()
-      $scope.parsedSignedTx.gasPrice.eth  = etherUnits.toEther(new BigNumber(ethFuncs.sanitizeHex(txData.gasPrice.toString('hex'))).toString(), 'wei' )
-      $scope.parsedSignedTx.txFee.wei     = new BigNumber(parseInt($scope.parsedSignedTx.gasLimit)).times(new BigNumber(parseInt($scope.parsedSignedTx.gasPrice.wei)))
-      $scope.parsedSignedTx.txFee.gwei    = new BigNumber($scope.parsedSignedTx.txFee.wei).div(etherUnits.getValueOfUnit('gwei')).toString()
-      $scope.parsedSignedTx.txFee.eth     = etherUnits.toEther( parseInt($scope.parsedSignedTx.txFee.wei), 'wei' ).toString()
-      $scope.parsedSignedTx.nonce         = (txData.nonce=='0x'||txData.nonce==''||txData.nonce==null) ? '0' : new BigNumber(ethFuncs.sanitizeHex(txData.nonce.toString('hex'))).toString()
-      $scope.parsedSignedTx.data          = (txData.data=='0x'||txData.data==''||txData.data==null) ? '(none)' : ethFuncs.sanitizeHex(txData.data.toString('hex'))
+      $scope.parsedSignedTx.gasPrice           = {}
+      $scope.parsedSignedTx.txFee              = {}
+      $scope.parsedSignedTx.balance            = $scope.wallet.getBalance()
+      $scope.parsedSignedTx.from               = isJSON ? $scope.wallet.getChecksumAddressString() : ethFuncs.sanitizeHex(ethUtil.toChecksumAddress(txData.from.toString('hex')))
+      $scope.parsedSignedTx.to                 = ethFuncs.sanitizeHex(ethUtil.toChecksumAddress(txData.to.toString('hex')))
+      $scope.parsedSignedTx.value              = (txData.value=='0x'||txData.value==''||txData.value==null) ? '0' : etherUnits.toEther(new BigNumber(ethFuncs.sanitizeHex(txData.value.toString('hex'))).toString(), 'wei' )
+      $scope.parsedSignedTx.gasLimit           = new BigNumber(ethFuncs.sanitizeHex(txData.gasLimit.toString('hex'))).toString()
+      $scope.parsedSignedTx.gasPrice.wei       = new BigNumber(ethFuncs.sanitizeHex(txData.gasPrice.toString('hex'))).toString()
+      $scope.parsedSignedTx.gasPrice.gwei      = new BigNumber(ethFuncs.sanitizeHex(txData.gasPrice.toString('hex'))).div(etherUnits.getValueOfUnit('gwei')).toString()
+      $scope.parsedSignedTx.gasPrice.eth       = etherUnits.toEther(new BigNumber(ethFuncs.sanitizeHex(txData.gasPrice.toString('hex'))).toString(), 'wei' )
+      $scope.parsedSignedTx.txFee.wei          = new BigNumber(parseInt($scope.parsedSignedTx.gasLimit)).times(new BigNumber(parseInt($scope.parsedSignedTx.gasPrice.wei)))
+      $scope.parsedSignedTx.txFee.gwei         = new BigNumber($scope.parsedSignedTx.txFee.wei).div(etherUnits.getValueOfUnit('gwei')).toString()
+      $scope.parsedSignedTx.txFee.eth          = etherUnits.toEther( parseInt($scope.parsedSignedTx.txFee.wei), 'wei' ).toString()
+      $scope.parsedSignedTx.nonce              = (txData.nonce=='0x'||txData.nonce==''||txData.nonce==null) ? '0' : new BigNumber(ethFuncs.sanitizeHex(txData.nonce.toString('hex'))).toString()
+      $scope.parsedSignedTx.data               = (txData.data=='0x'||txData.data==''||txData.data==null) ? '(none)' : ethFuncs.sanitizeHex(txData.data.toString('hex'))
+      $scope.parsedSignedTx.fraudPreventionFee = JSON.parse($scope.rawTx).fraudPreventionFee;
 
 
     }
