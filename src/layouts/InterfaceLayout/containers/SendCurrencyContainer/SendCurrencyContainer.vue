@@ -143,6 +143,36 @@
           </div>
         </div>
       </div>
+      <div class="advanced-content">
+
+        <div class="toggle-button-container">
+          <h4>{{ $t('common.coralEscrow') }}</h4>
+          <div class="toggle-button">
+            <span>{{ $t('interface.coralEscrow') }}</span>
+            <!-- Rounded switch -->
+            <div class="sliding-switch-white">
+              <label class="switch">
+                <input
+                  type="checkbox"
+                  v-bind:checked="safeSendActive"
+                  @click="safeSendActive = !safeSendActive" >
+                <span class="slider round"/>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div
+          v-if="safeSendActive"
+          class="input-container">
+            I agree to pay the fraud prevention transaction fee of 0.15% of my transaction + $0.30 USD.
+            <br />
+            <br />
+            I have also read and agree with the Terms and Conditions of the MyEtherWallet Fraud Prevention Service.
+            <br />
+            <br />
+            Please take note of your transaction hash. If it is not completed within 2 hours, please contact mew-support@heycoral.com
+        </div>
+      </div>
     </div>
 
     <div class="submit-button-container">
@@ -163,6 +193,7 @@
 import { mapGetters } from 'vuex';
 import InterfaceContainerTitle from '../../components/InterfaceContainerTitle';
 import CurrencyPicker from '../../components/CurrencyPicker';
+import { CoralConfig } from '@/configs/coral';
 import InterfaceBottomText from '@/components/InterfaceBottomText';
 import Blockie from '@/components/Blockie';
 import normalise from '@/helpers/normalise';
@@ -190,8 +221,10 @@ export default {
     }
   },
   data() {
+    const safeSendActive = localStorage.getItem('safeSendActive') === 'true' ? true : false;
     return {
       advancedExpend: false,
+      safeSendActive: safeSendActive,
       validAddress: true,
       amount: 0,
       amountValid: true,
@@ -259,32 +292,55 @@ export default {
     },
     async createTx() {
       const isEth = this.selectedCurrency.name === 'Ethereum';
+      const safeSendActive = this.safeSendActive;
       this.nonce = await this.$store.state.web3.eth.getTransactionCount(
         this.$store.state.wallet.getAddressString()
       );
 
-      this.raw = {
-        from: this.$store.state.wallet.getAddressString(),
-        gas: this.gasLimit,
-        nonce: this.nonce,
-        gasPrice: Number(unit.toWei(this.$store.state.gasPrice, 'gwei')),
-        value: isEth
-          ? this.amount === ''
-            ? 0
-            : unit.toWei(this.amount, 'ether')
-          : 0,
-        to: isEth
-          ? this.resolvedAddress !== ''
-            ? this.resolvedAddress
-            : this.address
-          : this.selectedCurrency.addr,
-        data: this.data,
-        chainId: this.$store.state.network.type.chainID || 1
-      };
+      if(isEth && safeSendActive) {
+        localStorage.setItem('safeSendActive', 'true');
+        const value = this.amount === '' ? 0 : unit.toWei(this.amount, 'ether');
+        const safeSendContractAddress = CoralConfig.safeSendEscrowContractAddress
+        const CoralSafeSendContract = new this.$store.state.web3.eth.Contract(CoralConfig.safeSendEscrowContractAbi, safeSendContractAddress);
+        const to = this.resolvedAddress !== '' ? this.resolvedAddress : this.address;
+        const query = CoralSafeSendContract.methods['deposit'](to, CoralConfig.safeSendScoreThreshold);
+        const encodedABI = query.encodeABI();
+        const gasLimit = parseInt(this.gasLimit) > CoralConfig.gasLimitSuggestion ? this.gasLimit : CoralConfig.gasLimitSuggestion; // assures minimum gas is provided
+        this.raw = {
+          from: this.$store.state.wallet.getAddressString(),
+          value: value,
+          to: safeSendContractAddress,
+          nonce: this.nonce,
+          gas: gasLimit,
+          data: encodedABI,
+          gasPrice: Number(unit.toWei(this.$store.state.gasPrice, 'gwei')),
+          chainId: this.$store.state.network.type.chainID || 1
+        };
+      } else {
+        localStorage.setItem('safeSendActive', 'false');
+        this.raw = {
+          from: this.$store.state.wallet.getAddressString(),
+          gas: this.gasLimit,
+          nonce: this.nonce,
+          gasPrice: Number(unit.toWei(this.$store.state.gasPrice, 'gwei')),
+          value: isEth
+            ? this.amount === ''
+              ? 0
+              : unit.toWei(this.amount, 'ether')
+            : 0,
+          to: isEth
+            ? this.resolvedAddress !== ''
+              ? this.resolvedAddress
+              : this.address
+            : this.selectedCurrency.addr,
+          data: this.data,
+        };
+      }
 
       if (this.address === '') {
         delete this.raw['to'];
       }
+
       this.$store.state.web3.eth.sendTransaction(this.raw);
     },
     confirmationModalOpen() {
