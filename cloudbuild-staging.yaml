@@ -1,0 +1,26 @@
+steps:
+  # Copy the latest ABI
+  - name: gcr.io/cloud-builders/gsutil
+    args:
+      - -m
+      - cp
+      - gs://reef-abis/master/AbtsRequestWithoutReef.json
+      - ./app/scripts/coralConfig/
+
+  # Build the dist
+  - name: 'gcr.io/cloud-builders/npm'
+    args:
+      - install
+  - name: 'gcr.io/cloud-builders/npm'
+    args:
+      - run
+      - dist
+
+  # Deploy to the bucket
+  - name: gcr.io/cloud-builders/gsutil
+    args:
+      - -m
+      - cp
+      - -r
+      - ./dist/*
+      - gs://mew-staging.heycoral.com

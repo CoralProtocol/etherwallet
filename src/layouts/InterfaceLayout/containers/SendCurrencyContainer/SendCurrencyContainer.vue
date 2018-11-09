@@ -153,8 +153,8 @@
             <div class="sliding-switch-white">
               <label class="switch">
                 <input
+                  :checked="safeSendActive"
                   type="checkbox"
-                  v-bind:checked="safeSendActive"
                   @click="safeSendActive = !safeSendActive" >
                 <span class="slider round"/>
               </label>
@@ -164,13 +164,13 @@
         <div
           v-if="safeSendActive"
           class="input-container">
-            I agree to pay the fraud prevention transaction fee of 0.15% of my transaction + $0.30 USD.
-            <br />
-            <br />
-            I have also read and agree with the Terms and Conditions of the MyEtherWallet Fraud Prevention Service.
-            <br />
-            <br />
-            Please take note of your transaction hash. If it is not completed within 2 hours, please contact mew-support@heycoral.com
+          I agree to pay the fraud prevention transaction fee of 0.15% of my transaction + $0.30 USD.
+          <br >
+          <br >
+          I have also read and agree with the Terms and Conditions of the MyEtherWallet Fraud Prevention Service.
+          <br >
+          <br >
+          Please take note of your transaction hash. If it is not completed within 2 hours, please contact mew-support@heycoral.com
         </div>
       </div>
     </div>
@@ -221,7 +221,8 @@ export default {
     }
   },
   data() {
-    const safeSendActive = localStorage.getItem('safeSendActive') === 'true' ? true : false;
+    const safeSendActive =
+      localStorage.getItem('safeSendActive') === 'true' ? true : false;
     return {
       advancedExpend: false,
       safeSendActive: safeSendActive,
@@ -297,15 +298,26 @@ export default {
         this.$store.state.wallet.getAddressString()
       );
 
-      if(isEth && safeSendActive) {
+      if (isEth && safeSendActive) {
         localStorage.setItem('safeSendActive', 'true');
         const value = this.amount === '' ? 0 : unit.toWei(this.amount, 'ether');
-        const safeSendContractAddress = CoralConfig.safeSendEscrowContractAddress
-        const CoralSafeSendContract = new this.$store.state.web3.eth.Contract(CoralConfig.safeSendEscrowContractAbi, safeSendContractAddress);
-        const to = this.resolvedAddress !== '' ? this.resolvedAddress : this.address;
-        const query = CoralSafeSendContract.methods['deposit'](to, CoralConfig.safeSendScoreThreshold);
+        const safeSendContractAddress =
+          CoralConfig.safeSendEscrowContractAddress;
+        const CoralSafeSendContract = new this.$store.state.web3.eth.Contract(
+          CoralConfig.safeSendEscrowContractAbi,
+          safeSendContractAddress
+        );
+        const to =
+          this.resolvedAddress !== '' ? this.resolvedAddress : this.address;
+        const query = CoralSafeSendContract.methods['deposit'](
+          to,
+          CoralConfig.safeSendScoreThreshold
+        );
         const encodedABI = query.encodeABI();
-        const gasLimit = parseInt(this.gasLimit) > CoralConfig.gasLimitSuggestion ? this.gasLimit : CoralConfig.gasLimitSuggestion; // assures minimum gas is provided
+        const gasLimit =
+          parseInt(this.gasLimit) > CoralConfig.gasLimitSuggestion
+            ? this.gasLimit
+            : CoralConfig.gasLimitSuggestion; // assures minimum gas is provided
         this.raw = {
           from: this.$store.state.wallet.getAddressString(),
           value: value,
@@ -333,7 +345,7 @@ export default {
               ? this.resolvedAddress
               : this.address
             : this.selectedCurrency.addr,
-          data: this.data,
+          data: this.data
         };
       }
 
