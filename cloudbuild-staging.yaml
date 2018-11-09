@@ -10,7 +10,6 @@ steps:
   # Build the dist
   - name: 'gcr.io/cloud-builders/npm'
     args:
-      - cache clean --force
       - install
   - name: 'gcr.io/cloud-builders/npm'
     args:
