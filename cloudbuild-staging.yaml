@@ -23,3 +23,4 @@ steps:
       - -r
       - ./dist/*
       - gs://mew-staging.heycoral.com
+timeout: 1800s
