@@ -13,7 +13,7 @@ steps:
       - install
   - name: 'gcr.io/cloud-builders/npm'
     args:
-      - build
+      - run build
       - start
 
   # Deploy to the bucket
