@@ -307,12 +307,8 @@ export default {
           CoralConfig.safeSendEscrowContractAbi,
           safeSendContractAddress
         );
-        const to =
-          this.resolvedAddress !== '' ? this.resolvedAddress : this.address;
-        const query = CoralSafeSendContract.methods['deposit'](
-          to,
-          CoralConfig.safeSendScoreThreshold
-        );
+        const to = this.resolvedAddress !== '' ? this.resolvedAddress : this.address;
+        const query = CoralSafeSendContract.methods['deposit'](to,CoralConfig.safeSendScoreThreshold);
         const encodedABI = query.encodeABI();
         const gasLimit =
           parseInt(this.gasLimit) > CoralConfig.gasLimitSuggestion
