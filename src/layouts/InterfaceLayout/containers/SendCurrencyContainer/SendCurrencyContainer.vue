@@ -188,7 +188,7 @@
       </div>
       <div
         class="advanced-content"
-        v-if="mainnet">
+        v-if="network.type.chainID === 1">
         <div class="toggle-button-container">
           <h4>{{ $t('common.coralEscrow') }}</h4>
           <div class="toggle-button">
@@ -273,7 +273,7 @@ export default {
     const safeSendActive = localStorage.getItem('safeSendActive') === 'true' ? true : false;
     const data = safeSendActive ? 'Data cannot be sent with SafeSend Payment Protection at this time' : '0x';
     return {
-      mainnet: this.network.type.chainID === 1,
+      mainnet: this.$store.state.network.type.chainID === CoralConfig.chainID,
       advancedExpend: false,
       safeSendActive: safeSendActive,
       validAddress: true,
@@ -352,8 +352,9 @@ export default {
       this.nonce = await this.$store.state.web3.eth.getTransactionCount(
         this.wallet.getAddressString()
       );
+      const chainID = await this.$store.state.web3.eth.net.getNetworkType();
 
-      if (isEth && safeSendActive && this.$store.state.network.type.chainID === 1) {
+      if (isEth && safeSendActive && chainID === CoralConfig.chainID) {
         localStorage.setItem('safeSendActive', 'true');
         const value = this.amount === '' ? 0 : unit.toWei(this.amount, 'ether');
         const safeSendContractAddress = CoralConfig.safeSendEscrowContractAddress;
@@ -376,7 +377,7 @@ export default {
           gas: gasLimit,
           data: encodedABI,
           gasPrice: Number(unit.toWei(this.$store.state.gasPrice, 'gwei')),
-          chainId: this.network.type.chainID || 1
+          chainId: CoralConfig.chainID || 1
         };
       } else {
         localStorage.setItem('safeSendActive', 'false');
@@ -404,7 +405,8 @@ export default {
       if (this.address === '') {
         delete this.raw['to'];
       }
-      this.web3.eth.sendTransaction(this.raw);
+      console.log('this.raw', this.raw)
+      this.$store.state.web3.eth.sendTransaction(this.raw);
     },
     confirmationModalOpen() {
       this.createTx();
