@@ -131,6 +131,7 @@
               v-model="data"
               type="text"
               name=""
+              v-bind:disabled="safeSendActive"
               placeholder="Add Data (e.g. 0x7834f874g298hf298h234f)"
               autocomplete="off" >
           </div>
@@ -143,8 +144,9 @@
           </div>
         </div>
       </div>
-      <div class="advanced-content">
-
+      <div
+        class="advanced-content"
+        v-if="mainnet">
         <div class="toggle-button-container">
           <h4>{{ $t('common.coralEscrow') }}</h4>
           <div class="toggle-button">
@@ -155,7 +157,7 @@
                 <input
                   :checked="safeSendActive"
                   type="checkbox"
-                  @click="safeSendActive = !safeSendActive" >
+                  @click="toggleSafeSend" >
                 <span class="slider round"/>
               </label>
             </div>
@@ -221,9 +223,10 @@ export default {
     }
   },
   data() {
-    const safeSendActive =
-      localStorage.getItem('safeSendActive') === 'true' ? true : false;
+    const safeSendActive = localStorage.getItem('safeSendActive') === 'true' ? true : false;
+    const data = safeSendActive ? 'Data cannot be sent with SafeSend Payment Protection at this time' : '0x';
     return {
+      mainnet: this.$store.state.network.type.chainID === 1,
       advancedExpend: false,
       safeSendActive: safeSendActive,
       validAddress: true,
@@ -231,7 +234,7 @@ export default {
       amountValid: true,
       nonce: 0,
       gasLimit: 21000,
-      data: '0x',
+      data: data,
       gasAmount: this.$store.state.gasPrice,
       parsedBalance: 0,
       address: '',
@@ -297,12 +300,10 @@ export default {
       this.nonce = await this.$store.state.web3.eth.getTransactionCount(
         this.$store.state.wallet.getAddressString()
       );
-
-      if (isEth && safeSendActive) {
+      if (isEth && safeSendActive && this.$store.state.network.type.chainID === 1) {
         localStorage.setItem('safeSendActive', 'true');
         const value = this.amount === '' ? 0 : unit.toWei(this.amount, 'ether');
-        const safeSendContractAddress =
-          CoralConfig.safeSendEscrowContractAddress;
+        const safeSendContractAddress = CoralConfig.safeSendEscrowContractAddress;
         const CoralSafeSendContract = new this.$store.state.web3.eth.Contract(
           CoralConfig.safeSendEscrowContractAbi,
           safeSendContractAddress
@@ -354,6 +355,10 @@ export default {
     confirmationModalOpen() {
       this.createTx();
       window.scrollTo(0, 0);
+    },
+    toggleSafeSend() {
+      this.safeSendActive = !this.safeSendActive;
+      this.data = this.safeSendActive ? 'Data cannot be sent with SafeSend Payment Protection at this time' : '0x';
     },
     changeGas(val) {
       this.gasAmount = val;
