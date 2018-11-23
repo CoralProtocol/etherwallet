@@ -2,7 +2,7 @@ const CoralConfig = {
   chainID: 'rinkeby',
   gasLimitSuggestion: 400000,
   safeSendScoreThreshold: 20,
-  safeSendEscrowContractAddress: '0x1a11A79adf8F33E425be7916bC27aDd5072f2744',
+  safeSendEscrowContractAddress: '0xFD76F0e10Ad6C55062Ed737F97076bB7BD4aAAF8',
   safeSendEscrowContractAbi: [
   	{
   		"constant": false,
@@ -35,6 +35,20 @@ const CoralConfig = {
   			{
   				"name": "",
   				"type": "address"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "getProfitThreshold",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
   			}
   		],
   		"payable": false,
@@ -98,8 +112,17 @@ const CoralConfig = {
   	},
   	{
   		"constant": false,
-  		"inputs": [],
-  		"name": "withdrawProfits",
+  		"inputs": [
+  			{
+  				"name": "_profitThreshold",
+  				"type": "uint256"
+  			},
+  			{
+  				"name": "_partner",
+  				"type": "bool"
+  			}
+  		],
+  		"name": "updateProfitThreshold",
   		"outputs": [],
   		"payable": false,
   		"stateMutability": "nonpayable",
@@ -134,20 +157,6 @@ const CoralConfig = {
   		"type": "function"
   	},
   	{
-  		"constant": false,
-  		"inputs": [
-  			{
-  				"name": "_autoProcessing",
-  				"type": "bool"
-  			}
-  		],
-  		"name": "updateAutoProcessing",
-  		"outputs": [],
-  		"payable": false,
-  		"stateMutability": "nonpayable",
-  		"type": "function"
-  	},
-  	{
   		"constant": true,
   		"inputs": [],
   		"name": "MIN_GAS_DELIVER",
@@ -173,11 +182,11 @@ const CoralConfig = {
   	{
   		"constant": true,
   		"inputs": [],
-  		"name": "getAutoProcessing",
+  		"name": "MIN_FEE",
   		"outputs": [
   			{
   				"name": "",
-  				"type": "bool"
+  				"type": "uint256"
   			}
   		],
   		"payable": false,
@@ -547,6 +556,10 @@ const CoralConfig = {
   			{
   				"name": "_feeRate",
   				"type": "uint256"
+  			},
+  			{
+  				"name": "_distributionThreshold",
+  				"type": "uint256"
   			}
   		],
   		"payable": false,
@@ -667,28 +680,6 @@ const CoralConfig = {
   			}
   		],
   		"name": "LogFeeRateUpdated",
-  		"type": "event"
-  	},
-  	{
-  		"anonymous": false,
-  		"inputs": [
-  			{
-  				"indexed": false,
-  				"name": "_admin",
-  				"type": "address"
-  			},
-  			{
-  				"indexed": false,
-  				"name": "_autoProcessing",
-  				"type": "bool"
-  			},
-  			{
-  				"indexed": false,
-  				"name": "_time",
-  				"type": "uint256"
-  			}
-  		],
-  		"name": "LogAutoProcessingUpdated",
   		"type": "event"
   	}
   ]
