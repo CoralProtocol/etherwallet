@@ -15,10 +15,11 @@
             />
             <div class="the-form amount-number">
               <input
-                v-model="toAmt"
+                :value="toAmt"
                 :placeholder="$t('interface.depAmount')"
                 type="string"
                 name=""
+                @input="debouncedAmount"
               />
             </div>
           </div>
@@ -63,7 +64,6 @@
           <div class="title">
             <div class="title-helper">
               <h4>{{ $t('common.data') }}</h4>
-              <popover :popcontent="$t('popover.whatIsDataContent')" />
             </div>
           </div>
         </div>
@@ -88,6 +88,7 @@
         :value="toAmt"
         :to-address="address"
         :gas-limit="gasLimit"
+        :highest-gas="highestGas"
         @nonceUpdate="nonceUpdated"
         @gasLimitUpdate="gasLimitUpdated"
       />
@@ -128,6 +129,7 @@ const EthTx = require('ethereumjs-tx');
 import BN from 'bignumber.js';
 import * as unit from 'ethjs-unit';
 import { mapGetters } from 'vuex';
+import utils from 'web3-utils';
 
 export default {
   components: {
@@ -151,6 +153,10 @@ export default {
       default: function() {
         return [];
       }
+    },
+    highestGas: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -190,6 +196,10 @@ export default {
     }
   },
   methods: {
+    debouncedAmount: utils._.debounce(function(e) {
+      this.toAmt = new BN(e.target.value).decimalPlaces(18).toFixed();
+      e.target.value = this.toAmt;
+    }, 300),
     async createDataHex(amount, address, currency) {
       const locAmount = amount !== null ? amount : this.toAmt;
       const locAddress = address !== null ? address : this.address;
