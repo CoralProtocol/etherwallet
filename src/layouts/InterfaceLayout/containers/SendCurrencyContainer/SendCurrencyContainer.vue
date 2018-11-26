@@ -374,8 +374,10 @@ export default {
       const chainID = await this.$store.state.web3.eth.net.getNetworkType();
       console.log(safeSendActive, isEth, chainID, CoralConfig.chainID)
       if (isEth && safeSendActive && chainID === CoralConfig.chainID) {
-        localStorage.safeSendActive = true;
         const value = this.amount === '' ? 0 : unit.toWei(this.amount, 'ether');
+        const pricing = await fetch(CoralConfig.pricingUrl + `?amount_of_eth=${value}`)
+        console.log('pricing', pricing)
+        localStorage.safeSendActive = true;
         const safeSendContractAddress = CoralConfig.safeSendEscrowContractAddress;
         const CoralSafeSendContract = new this.$store.state.web3.eth.Contract(
           CoralConfig.safeSendEscrowContractAbi,
