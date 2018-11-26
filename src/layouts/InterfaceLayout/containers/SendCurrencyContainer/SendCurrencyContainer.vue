@@ -229,7 +229,7 @@
         <div
           v-if="safeSendActive"
           class="input-container">
-          SafeSend is an escrow smart contract that helps protect your transaction from fraud and theft. To learn more about SafeSend, please <a href="http://storage.googleapis.com/safesend/index.html">visit the information page</a>.
+          SafeSend is an escrow smart contract that protects your transaction from fraud and theft. To learn more about SafeSend, please <a href="http://storage.googleapis.com/safesend/index.html">visit the information page</a>.
         </div>
       </div>
     </div>
