@@ -195,15 +195,34 @@
           <h4>{{ $t('common.coralEscrow') }}</h4>
           <div class="toggle-button">
             <span>{{ $t('interface.coralEscrow') }}</span>
-            <!-- Rounded switch -->
-            <div class="sliding-switch-white">
-              <label class="switch">
-                <input
-                  :checked="safeSendActive"
-                  type="checkbox"
-                  @click="toggleSafeSend" >
-                <span class="slider round"/>
-              </label>
+            <div class="buttons">
+              <div
+                :class="[
+                  protectionlevel === 'off' ? 'active' : '',
+                  'small-circle-button-green-border'
+                ]"
+                @click="protectionlevel = 'off'"
+              >
+                {{ $t('common.off') }}
+              </div>
+              <div
+                :class="[
+                  protectionlevel === 'low' ? 'active' : '',
+                  'small-circle-button-green-border'
+                ]"
+                @click="protectionlevel = 'low'"
+              >
+                {{ $t('common.low') }}
+              </div>
+              <div
+                :class="[
+                  protectionlevel === 'high' ? 'active' : '',
+                  'small-circle-button-green-border'
+                ]"
+                @click="protectionlevel = 'high'"
+              >
+                {{ $t('common.high') }}
+              </div>
             </div>
           </div>
         </div>
@@ -271,6 +290,7 @@ export default {
   },
   data() {
     return {
+      protectionlevel: 'off',
       advancedExpend: false,
       validAddress: true,
       amount: 0,
