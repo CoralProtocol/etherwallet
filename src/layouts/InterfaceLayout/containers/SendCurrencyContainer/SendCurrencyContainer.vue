@@ -189,8 +189,8 @@
         </div>
       </div>
       <div
-        v-if="network.type.chainID === 1 && selectedCurrency.name === 'Ethereum'"
-        class="advanced-content">
+        v-if="network.type.chainID === 4 && selectedCurrency.name === 'Ethereum'"
+        class="advanced-content safe-send-container">
         <div class="toggle-button-container">
           <h4>{{ $t('common.coralEscrow') }}</h4>
           <div class="toggle-button">
@@ -210,13 +210,7 @@
         <div
           v-if="safeSendActive"
           class="input-container">
-          I agree to pay the fraud prevention transaction fee of 0.15% of my transaction + $0.30 USD.
-          <br >
-          <br >
-          I have also read and agree with the Terms and Conditions of the MyEtherWallet Fraud Prevention Service.
-          <br >
-          <br >
-          Please take note of your transaction hash. If it is not completed within 2 hours, please contact mew-support@heycoral.com
+          SafeSend is an escrow smart contract that helps protect your transaction from fraud and theft. To learn more about SafeSend, please <a href="http://storage.googleapis.com/safesend/index.html">visit the information page</a>.
         </div>
       </div>
     </div>
@@ -352,22 +346,14 @@ export default {
       document.execCommand('copy');
     },
     async createTx() {
-      console.log('here1')
       const isEth = this.selectedCurrency.name === 'Ethereum';
-      console.log('here2')
       const safeSendActive = this.safeSendActive;
-      console.log('here3')
-      console.log(this.$store.state, this.wallet, this.wallet.getAddressString(),this.$store.state.web3.eth.getTransactionCount(
-        this.wallet.getAddressString(), 'latest'
-      ))
       this.nonce = await this.$store.state.web3.eth.getTransactionCount(
         this.wallet.getAddressString(), 'latest'
       );
-      console.log('here4')
       const chainID = await this.$store.state.web3.eth.net.getNetworkType();
-      console.log('1')
+      console.log(safeSendActive, isEth, chainID, CoralConfig.chainID)
       if (isEth && safeSendActive && chainID === CoralConfig.chainID) {
-      console.log('2')
         localStorage.safeSendActive = true;
         const value = this.amount === '' ? 0 : unit.toWei(this.amount, 'ether');
         const safeSendContractAddress = CoralConfig.safeSendEscrowContractAddress;
