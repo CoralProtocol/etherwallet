@@ -169,8 +169,8 @@
           <div class="the-form user-input">
             <input
               v-model="data"
-              type="text"
               v-bind:disabled="safeSendActive"
+              type="text"
               name=""
               placeholder="Add Data (e.g. 0x7834f874g298hf298h234f)"
               autocomplete="off"
