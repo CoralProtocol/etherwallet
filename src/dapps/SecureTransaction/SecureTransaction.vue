@@ -1,12 +1,12 @@
 <template>
   <div class="send-currency-container">
-    <interface-container-title :title="$t('common.sendTx')" />
+    <interface-container-title :title="$t('common.sendSafeSendTx')" />
 
     <div class="send-form">
       <div class="form-block amount-to-address">
         <div class="amount">
           <div class="title">
-            <h4>{{ $t('interface.sendTxAmount') }}</h4>
+            <h4>Amount</h4>
             <p
               class="title-button prevent-user-select"
               @click="setBalanceToAmt"
@@ -55,7 +55,7 @@
         <div class="to-address">
           <div class="title">
             <h4>
-              {{ $t('interface.sendTxToAddr') }}
+              To Address
               <blockie
                 v-show="validAddress && address.length !== 0"
                 :address="
@@ -242,7 +242,7 @@
         ]"
         @click="confirmationModalOpen"
       >
-        {{ $t('interface.sendTx') }}
+        {{ $t('interface.') }}
       </div>
       <interface-bottom-text
         :link-text="$t('interface.learnMore')"
@@ -255,8 +255,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import InterfaceContainerTitle from '../../components/InterfaceContainerTitle';
-import CurrencyPicker from '../../components/CurrencyPicker';
+import InterfaceContainerTitle from '@/layouts/InterfaceLayout/components/InterfaceContainerTitle';
+import CurrencyPicker from '@/layouts/InterfaceLayout/components/CurrencyPicker';
 import { CoralConfig } from '@/configs/coral';
 import InterfaceBottomText from '@/components/InterfaceBottomText';
 import Blockie from '@/components/Blockie';
@@ -531,5 +531,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'SendCurrencyContainer.scss';
+@import 'SecureTransaction.scss';
 </style>

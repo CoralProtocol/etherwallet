@@ -2,6 +2,12 @@ import domainSale from '@/assets/images/icons/domain-sale.svg';
 import registerDomain from '@/assets/images/icons/domain.svg';
 
 const dapps = {
+  SecureTransaction: {
+    route: '/interface/dapps/secure-transaction',
+    icon: registerDomain,
+    title: 'interface.secureTransaction',
+    desc: 'interface.secureTransactionDescShort'
+  },
   registerDomain: {
     route: '/interface/dapps/register-domain',
     icon: registerDomain,
