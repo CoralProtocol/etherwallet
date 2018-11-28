@@ -7,13 +7,16 @@ steps:
       - gs://reef-abis/master/AbtsRequestWithoutReef.json
       - ./app/scripts/coralConfig/
 
-  # Build the dist
+  # Install dependencies per package.json
   - name: 'gcr.io/cloud-builders/npm'
     args:
       - install
-#  - name: 'gcr.io/cloud-builders/npm'
-#    args:
-#      - start
+
+  # Build the dist
+  - name: 'gcr.io/cloud-builders/npm'
+    args:
+      - run
+      - build
 
   # Deploy to the bucket
   - name: gcr.io/cloud-builders/gsutil
