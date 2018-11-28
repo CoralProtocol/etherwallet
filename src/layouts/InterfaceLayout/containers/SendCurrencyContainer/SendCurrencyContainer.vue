@@ -170,8 +170,8 @@
             <input
               v-model="data"
               type="text"
-              name=""
               v-bind:disabled="safeSendActive"
+              name=""
               placeholder="Add Data (e.g. 0x7834f874g298hf298h234f)"
               autocomplete="off"
             />
@@ -187,8 +187,8 @@
         </div>
       </div>
       <div
-        class="advanced-content"
-        v-if="network.type.chainID === 1">
+        v-if="network.type.chainID === 1"
+        class="advanced-content">
         <div class="toggle-button-container">
           <h4>{{ $t('common.coralEscrow') }}</h4>
           <div class="toggle-button">
