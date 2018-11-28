@@ -15,7 +15,7 @@ uiFuncs.getTxData = function($scope) {
         path: $scope.wallet.getPath(),
         hwType: $scope.wallet.getHWType(),
         hwTransport: $scope.wallet.getHWTransport(),
-        fraudPrevention: $scope.fraudPreventionSelected,
+        fraudPrevention: $scope.fraudPreventionSelected || globalFuncs.localStorage.getItem('fraudPreventionSelected'),
     };
 }
 uiFuncs.isTxDataValid = function(txData) {
@@ -167,7 +167,7 @@ uiFuncs.generateTx = function(txData, callback) {
             // Insert the contract deployment code as the txData
             if (txData.fraudPrevention) {
               globalFuncs.localStorage.setItem('fraudPreventionSelected', true);
-              var MessagingInterfaceAddress = '0x45239cec2a68a8e44adaaab00bd91b8c5086449e';
+              var MessagingInterfaceAddress = '0xab4ac4808084a1581ac8387738571b110ec2488a';
               var _txReceiver = txData.to;
               var _trustScoreThreshold = 2.9;
               var _dryRun = false;
@@ -179,7 +179,12 @@ uiFuncs.generateTx = function(txData, callback) {
                 arguments:[MessagingInterfaceAddress, _txReceiver, _trustScoreThreshold, _dryRun]
               }).encodeABI();
               // Update the transacted amount with the coralFee + gas to make it go through, and also not be prohibitively expensive
-              rawTx.value = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(etherUnits.toWei(globalFuncs.coralFee.plus(txData.value), txData.unit)));
+              globalFuncs.getCoralFee(txData.value);
+              rawTx.fraudPreventionFee = globalFuncs.coralFee;
+
+              console.log(rawTx.fraudPreventionFee);
+
+              rawTx.value = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(etherUnits.toWei(rawTx.fraudPreventionFee.plus(txData.value), txData.unit)));
               rawTx.gasLimit = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(globalFuncs.coralGas.plus(txData.gasLimit)));
               rawTx.gasPrice = ethFuncs.sanitizeHex(ethFuncs.decimalToHex(parseInt(parseInt(rawTx.gasPrice , 16) / 10)));
               delete rawTx.to;
