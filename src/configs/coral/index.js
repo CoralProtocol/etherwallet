@@ -1,8 +1,7 @@
 const CoralConfig = {
-  pricingUrl: 'http://localhost:3001/pricing',
+  pricingUrl: 'http://35.187.231.143/pricing',
   chainID: 'rinkeby',
-  gasLimitSuggestion: 400000,
-  safeSendScoreThreshold: 20,
+  gasLimitSuggestion: 210000,
   safeSendEscrowContractAddress: '0xFD76F0e10Ad6C55062Ed737F97076bB7BD4aAAF8',
   safeSendEscrowContractAbi: [
   	{

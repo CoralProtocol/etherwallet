@@ -1,5 +1,5 @@
 <template>
-  <div class="send-currency-container">
+  <div class="send-currency-container-safe-send">
     <interface-container-title :title="$t('common.sendSafeSendTx')" />
 
     <div class="send-form">
@@ -14,12 +14,10 @@
               Entire Balance
             </p>
           </div>
-          <currency-picker
-            :currency="tokensWithBalance"
-            :page="'sendEthAndTokens'"
-            :token="true"
-            @selectedCurrency="setSelectedCurrency"
-          />
+          <span class="protection-fee-text"
+            >SafeSend Fee: ~{{ safeSendPriceEstimate }} ETH</span
+          >
+
           <div class="the-form amount-number">
             <input
               :value="amount"
@@ -137,7 +135,6 @@
           </div>
         </div>
       </div>
-
       <div class="the-form gas-amount">
         <input v-model="gasAmount" type="number" placeholder="Gas Amount" />
         <div class="good-button-container">
@@ -152,9 +149,9 @@
     <div class="send-form advanced">
       <div class="advanced-content">
         <div class="toggle-button-container">
-          <h4>{{ $t('common.advanced') }}</h4>
+          <h4>Advanced</h4>
           <div class="toggle-button">
-            <span>{{ $t('interface.dataGas') }}</span>
+            <span>Gas Limited</span>
             <!-- Rounded switch -->
             <div class="sliding-switch-white">
               <label class="switch">
@@ -170,16 +167,6 @@
         <div v-if="advancedExpend" class="input-container">
           <div class="the-form user-input">
             <input
-              v-if="!safeSendActive"
-              v-model="data"
-              type="text"
-              name=""
-              placeholder="Add Data (e.g. 0x7834f874g298hf298h234f)"
-              autocomplete="off"
-            />
-          </div>
-          <div class="the-form user-input">
-            <input
               v-model="gasLimit"
               :placeholder="$t('common.gasLimit')"
               type="number"
@@ -189,28 +176,21 @@
         </div>
       </div>
       <div
-        v-if="network.type.chainID === 4 && selectedCurrency.name === 'Ethereum'"
-        class="advanced-content safe-send-container">
+        v-if="
+          network.type.chainID === 4 && selectedCurrency.name === 'Ethereum'
+        "
+        class="advanced-content safe-send-container"
+      >
         <div class="toggle-button-container">
-          <h4>{{ $t('common.coralEscrow') }}</h4>
+          <h4>Security Level</h4>
           <div class="toggle-button">
-            <span>{{ $t('interface.coralEscrow') }}</span>
             <div class="buttons">
-              <div
-                :class="[
-                  protectionlevel === 'off' ? 'active' : '',
-                  'small-circle-button-green-border'
-                ]"
-                @click="protectionlevel = 'off'"
-              >
-                {{ $t('common.off') }}
-              </div>
               <div
                 :class="[
                   protectionlevel === 'low' ? 'active' : '',
                   'small-circle-button-green-border'
                 ]"
-                @click="protectionlevel = 'low'"
+                @click="protectionlevel = 'low';"
               >
                 {{ $t('common.low') }}
               </div>
@@ -219,22 +199,32 @@
                   protectionlevel === 'high' ? 'active' : '',
                   'small-circle-button-green-border'
                 ]"
-                @click="protectionlevel = 'high'"
+                @click="protectionlevel = 'high';"
               >
                 {{ $t('common.high') }}
               </div>
             </div>
           </div>
         </div>
-        <div
-          v-if="safeSendActive"
-          class="input-container">
-          SafeSend is an escrow smart contract that protects your transaction from fraud and theft. To learn more about SafeSend, please <a target="_blank" href="http://storage.googleapis.com/safesend/index.html">visit the information page</a>.
+        <div class="input-container">
+          SafeSend is an escrow smart contract that protects your transaction
+          from fraud and theft. To learn more about SafeSend, please
+          <a
+            target="_blank"
+            href="http://storage.googleapis.com/safesend/index.html"
+            >visit the information page</a
+          >.
         </div>
       </div>
     </div>
 
     <div class="submit-button-container">
+      <div>
+        Your estimated Safesend Fee (in addition to gas):&nbsp;~{{
+          safeSendPriceEstimate
+        }}&nbsp;ETH
+      </div>
+      <br />
       <div
         :class="[
           validAddress && address.length !== 0 ? '' : 'disabled',
@@ -242,7 +232,7 @@
         ]"
         @click="confirmationModalOpen"
       >
-        {{ $t('interface.') }}
+        Send Secured Transaction
       </div>
       <interface-bottom-text
         :link-text="$t('interface.learnMore')"
@@ -256,7 +246,6 @@
 <script>
 import { mapGetters } from 'vuex';
 import InterfaceContainerTitle from '@/layouts/InterfaceLayout/components/InterfaceContainerTitle';
-import CurrencyPicker from '@/layouts/InterfaceLayout/components/CurrencyPicker';
 import { CoralConfig } from '@/configs/coral';
 import InterfaceBottomText from '@/components/InterfaceBottomText';
 import Blockie from '@/components/Blockie';
@@ -269,8 +258,7 @@ export default {
   components: {
     'interface-container-title': InterfaceContainerTitle,
     'interface-bottom-text': InterfaceBottomText,
-    blockie: Blockie,
-    'currency-picker': CurrencyPicker
+    blockie: Blockie
   },
   props: {
     tokensWithBalance: {
@@ -290,11 +278,11 @@ export default {
   },
   data() {
     return {
-      protectionlevel: 'off',
+      protectionlevel: 'low',
       advancedExpend: false,
       validAddress: true,
       amount: 0,
-      safeSendActive: localStorage.safeSendActive === 'true' ? true : false,
+      safeSendPriceEstimate: 0,
       amountValid: true,
       nonce: 0,
       gasLimit: 21000,
@@ -345,15 +333,25 @@ export default {
     }
   },
   mounted() {
-    if (this.account.balance) {
-      this.parsedBalance = this.account.balance;
-    }
-    this.gasAmount = this.gasPrice;
+    const address = this.$store.state.wallet.getAddressString();
+    this.web3.eth
+      .getBalance(address)
+      .then(res => {
+        this.balance = this.web3.utils.fromWei(res, 'ether');
+        this.$store.dispatch('setAccountBalance', this.balance);
+        this.parsedBalance = this.balance;
+        this.gasAmount = this.gasPrice;
+      })
+      .catch(err => {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      });
   },
   methods: {
     debouncedAmount: utils._.debounce(function(e) {
       this.amount = new BigNumber(e.target.value).decimalPlaces(18).toFixed();
       e.target.value = this.amount;
+      this.getSafeSendFee();
       if (this.verifyAddr()) {
         this.estimateGas();
       }
@@ -366,25 +364,27 @@ export default {
       document.execCommand('copy');
     },
     async createTx() {
-      const isEth = this.selectedCurrency.name === 'Ethereum';
-      const safeSendActive = this.safeSendActive;
       this.nonce = await this.$store.state.web3.eth.getTransactionCount(
-        this.wallet.getAddressString(), 'latest'
+        this.wallet.getAddressString(),
+        'latest'
       );
       const chainID = await this.$store.state.web3.eth.net.getNetworkType();
-      console.log(safeSendActive, isEth, chainID, CoralConfig.chainID)
-      if (isEth && safeSendActive && chainID === CoralConfig.chainID) {
+
+      if (chainID === CoralConfig.chainID) {
         const value = this.amount === '' ? 0 : unit.toWei(this.amount, 'ether');
-        const pricing = await fetch(CoralConfig.pricingUrl + `?amount_of_eth=${value}`)
-        console.log('pricing', pricing)
-        localStorage.safeSendActive = true;
-        const safeSendContractAddress = CoralConfig.safeSendEscrowContractAddress;
+        const safeSendContractAddress =
+          CoralConfig.safeSendEscrowContractAddress;
         const CoralSafeSendContract = new this.$store.state.web3.eth.Contract(
           CoralConfig.safeSendEscrowContractAbi,
           safeSendContractAddress
         );
-        const to = this.resolvedAddress !== '' ? this.resolvedAddress : this.address;
-        const query = CoralSafeSendContract.methods['deposit'](to,CoralConfig.safeSendScoreThreshold);
+        const to =
+          this.resolvedAddress !== '' ? this.resolvedAddress : this.address;
+        const protectionlevel = this.protectionlevel === 'low' ? 20 : 30;
+        const query = CoralSafeSendContract.methods['deposit'](
+          to,
+          protectionlevel
+        );
         const encodedABI = query.encodeABI();
         const gasLimit =
           parseInt(this.gasLimit) > CoralConfig.gasLimitSuggestion
@@ -400,43 +400,16 @@ export default {
           gasPrice: Number(unit.toWei(this.$store.state.gasPrice, 'gwei')),
           chainId: CoralConfig.chainID || 1
         };
-      } else {
-      console.log('3')
-        localStorage.safeSendActive = 'false';
 
-        this.raw = {
-          from: this.wallet.getAddressString(),
-          gas: this.gasLimit,
-          nonce: this.nonce,
-          gasPrice: Number(unit.toWei(this.gasPrice, 'gwei')),
-          value: isEth
-            ? this.amount === ''
-              ? 0
-              : unit.toWei(this.amount, 'ether')
-            : 0,
-          to: isEth
-            ? this.resolvedAddress !== ''
-              ? this.resolvedAddress
-              : this.address
-            : this.selectedCurrency.addr,
-          data: this.data,
-          chainId: this.network.type.chainID || 1
-        };
+        if (this.address === '') {
+          delete this.raw['to'];
+        }
+        this.$store.state.web3.eth.sendTransaction(this.raw);
       }
-
-      if (this.address === '') {
-        delete this.raw['to'];
-      }
-      console.log('this.raw', this.raw)
-      this.$store.state.web3.eth.sendTransaction(this.raw);
     },
     confirmationModalOpen() {
-      console.log('confirmationModalOpen')
       this.createTx();
       window.scrollTo(0, 0);
-    },
-    toggleSafeSend() {
-      this.safeSendActive = !this.safeSendActive;
     },
     changeGas(val) {
       this.gasAmount = val;
@@ -444,11 +417,8 @@ export default {
       this.$store.dispatch('setGasPrice', Number(val));
     },
     setBalanceToAmt() {
-      if (this.selectedCurrency.name === 'Ethereum') {
-        this.amount = this.parsedBalance - this.transactionFee;
-      } else {
-        this.amount = this.selectedCurrency.balance;
-      }
+      this.amount = this.parsedBalance - this.transactionFee;
+      this.getSafeSendFee();
     },
     createDataHex() {
       let amount;
@@ -516,6 +486,17 @@ export default {
           // eslint-disable-next-line no-console
           console.error(err);
         });
+    },
+    async getSafeSendFee() {
+      const value = this.amount === '' ? 0 : unit.toWei(this.amount, 'ether');
+      const response = await fetch(
+        `${CoralConfig.pricingUrl}?amount_of_eth=${value}`
+      );
+      const data = await response.json();
+      this.safeSendPriceEstimate = parseFloat(
+        unit.fromWei(data.price, 'ether'),
+        10
+      ).toFixed(3);
     },
     verifyAddr() {
       if (this.address.length !== 0 && this.address !== '') {

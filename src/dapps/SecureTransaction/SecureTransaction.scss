@@ -1,7 +1,14 @@
 @import './InterfaceContainer';
 
-.send-currency-container {
+.send-currency-container-safe-send {
   @extend %interface-container;
+
+  .protection-fee-text{
+    color: #506175;
+    line-height: 21px;
+    padding: 0 8px;
+    margin-bottom: 6px;
+  }
 
   .send-form {
     @extend %send-form-base;
@@ -41,12 +48,11 @@
     .amount-to-address {
       display: grid;
       grid-column-gap: 5px;
-      grid-template-columns: 2fr 3fr;
+      grid-template-columns: 1fr 2fr;
 
       .title {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 13px;
         padding: 0 8px;
 
         .title-button {
@@ -111,6 +117,7 @@
           align-items: center;
           display: flex;
           position: relative;
+          margin-bottom: 21px;
 
           h4 {
             position: relative;
@@ -131,7 +138,7 @@
         }
 
         .address-block {
-          height: 98px;
+          height: 47px;
           position: relative;
 
           i {
@@ -153,6 +160,7 @@
     }
 
     .gas-amount,
+    .fee-amount,
     .user-input {
       position: relative;
 
