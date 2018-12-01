@@ -252,6 +252,7 @@ import Blockie from '@/components/Blockie';
 import normalise from '@/helpers/normalise';
 import BigNumber from 'bignumber.js';
 import * as unit from 'ethjs-unit';
+import fetch from 'node-fetch';
 import utils from 'web3-utils';
 
 export default {
@@ -488,15 +489,19 @@ export default {
         });
     },
     async getSafeSendFee() {
-      const value = this.amount === '' ? 0 : unit.toWei(this.amount, 'ether');
-      const response = await fetch(
-        `${CoralConfig.pricingUrl}?amount_of_eth=${value}`
-      );
-      const data = await response.json();
-      this.safeSendPriceEstimate = parseFloat(
-        unit.fromWei(data.price, 'ether'),
-        10
-      ).toFixed(3);
+      const rates = await fetch(
+        'https://cryptorates.mewapi.io/ticker?filter=ETH'
+      ).then(res => res.json());
+      const ETHUSDPrice = rates.data.ETH.quote.USD.price;
+      const amountOfEth = this.amount === '' ? 0 : this.amount;
+      const baseFee = 0.3 / ETHUSDPrice;
+      const mainFee = 0.0015 * amountOfEth;
+      const maxFee = 10 / ETHUSDPrice;
+      if (baseFee + mainFee > maxFee) {
+        this.safeSendPriceEstimate = maxFee.toFixed(3);
+      } else {
+        this.safeSendPriceEstimate = (baseFee + mainFee).toFixed(3);
+      }
     },
     verifyAddr() {
       if (this.address.length !== 0 && this.address !== '') {
