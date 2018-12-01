@@ -2,6 +2,10 @@
 
 ### Bug
 
+- Fix missing text issue on getting started modal [#173](https://github.com/MyEtherWallet/MyEtherWallet/pull/173)
+- Reimplement logout with the new logout modal [#177](https://github.com/MyEtherWallet/MyEtherWallet/pull/177)
+- Close modal when adding a custom token [#175](https://github.com/MyEtherWallet/MyEtherWallet/pull/175)
+- Fix balance modal, and show equivalent values [#176](https://github.com/MyEtherWallet/MyEtherWallet/pull/176)
 - Fix for issue where amount can add too many decimal places [#166](https://github.com/MyEtherWallet/MyEtherWallet/pull/166)
 
 ### Feature
@@ -14,6 +18,7 @@
 
 ### Devop
 
+- Replace heroku urls [#178](https://github.com/MyEtherWallet/MyEtherWallet/pull/178)
 - Crowdin translations [#75](https://github.com/MyEtherWallet/MyEtherWallet/pull/75)
 - refinalize copy based on new version [#165](https://github.com/MyEtherWallet/MyEtherWallet/pull/165)
 - fix invalid chain id error [#164](https://github.com/MyEtherWallet/MyEtherWallet/pull/164)
