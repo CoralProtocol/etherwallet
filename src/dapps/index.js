@@ -1,12 +1,13 @@
 import domainSale from '@/assets/images/icons/domain-sale.svg';
 import registerDomain from '@/assets/images/icons/domain.svg';
+import secureTransaction from '@/assets/images/icons/button-key.svg';
 
 const dapps = {
   SecureTransaction: {
     route: '/interface/dapps/secure-transaction',
-    icon: registerDomain,
-    title: 'interface.secureTransaction',
-    desc: 'interface.secureTransactionDescShort'
+    icon: secureTransaction,
+    title: 'SafeSend ETH Transaction',
+    desc: 'Protect and Secure your ETH transaction using SafeSend'
   },
   registerDomain: {
     route: '/interface/dapps/register-domain',
