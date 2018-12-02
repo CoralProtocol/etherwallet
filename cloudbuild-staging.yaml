@@ -7,13 +7,16 @@ steps:
       - gs://reef-abis/master/AbtsRequestWithoutReef.json
       - ./app/scripts/coralConfig/
 
-  # Build the dist
+  # Install dependencies per package.json
   - name: 'gcr.io/cloud-builders/npm'
     args:
       - install
+
+  # Build the dist
   - name: 'gcr.io/cloud-builders/npm'
     args:
-      - start
+      - run
+      - build
 
   # Deploy to the bucket
   - name: gcr.io/cloud-builders/gsutil
@@ -26,4 +29,3 @@ steps:
 timeout: 1800s
 options:
   machineType: 'N1_HIGHCPU_32'
-  
