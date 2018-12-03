@@ -187,19 +187,19 @@
             <div class="buttons">
               <div
                 :class="[
-                  protectionlevel === 'low' ? 'active' : '',
+                  protectionLevel === 'low' ? 'active' : '',
                   'small-circle-button-green-border'
                 ]"
-                @click="protectionlevel = 'low';"
+                @click="protectionLevel = 'low';"
               >
                 {{ $t('common.low') }}
               </div>
               <div
                 :class="[
-                  protectionlevel === 'high' ? 'active' : '',
+                  protectionLevel === 'high' ? 'active' : '',
                   'small-circle-button-green-border'
                 ]"
-                @click="protectionlevel = 'high';"
+                @click="protectionLevel = 'high';"
               >
                 {{ $t('common.high') }}
               </div>
@@ -279,7 +279,7 @@ export default {
   },
   data() {
     return {
-      protectionlevel: 'low',
+      protectionLevel: 'low',
       advancedExpend: false,
       validAddress: true,
       amount: 0,
@@ -310,6 +310,7 @@ export default {
   },
   watch: {
     address(newVal) {
+    console.log('new address', newVal)
       this.address = newVal;
       if (this.verifyAddr()) {
         this.validAddress = false;
@@ -382,10 +383,10 @@ export default {
         const to =
           this.resolvedAddress !== '' ? this.resolvedAddress : this.address;
         console.log('to, this.resolvedAddress, this.address', to, this.resolvedAddress, this.address)
-        const protectionlevel = this.protectionlevel === 'low' ? 20 : 30;
+        const protectionLevel = this.protectionLevel === 'low' ? 20 : 30;
         const query = CoralSafeSendContract.methods['deposit'](
           to,
-          protectionlevel
+          protectionLevel
         );
         const encodedABI = query.encodeABI();
         const gasLimit =
