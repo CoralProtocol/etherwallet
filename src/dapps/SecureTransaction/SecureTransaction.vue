@@ -310,7 +310,6 @@ export default {
   },
   watch: {
     address(newVal) {
-    console.log('new address', newVal)
       this.address = newVal;
       if (this.verifyAddr()) {
         this.validAddress = false;
@@ -382,7 +381,6 @@ export default {
         );
         const to =
           this.resolvedAddress !== '' ? this.resolvedAddress : this.address;
-        console.log('to, this.resolvedAddress, this.address', to, this.resolvedAddress, this.address)
         const protectionLevel = this.protectionLevel === 'low' ? 20 : 30;
         const query = CoralSafeSendContract.methods['deposit'](
           to,
@@ -494,15 +492,30 @@ export default {
       const rates = await fetch(
         'https://cryptorates.mewapi.io/ticker?filter=ETH'
       ).then(res => res.json());
-      const ETHUSDPrice = rates.data.ETH.quote.USD.price;
-      const amountOfEth = this.amount === '' ? 0 : this.amount;
-      const baseFee = 0.3 / ETHUSDPrice;
-      const mainFee = 0.0015 * amountOfEth;
-      const maxFee = 10 / ETHUSDPrice;
-      if (baseFee + mainFee > maxFee) {
-        this.safeSendPriceEstimate = maxFee.toFixed(3);
+      if (
+        rates &&
+        rates.data &&
+        rates.data.ETH &&
+        rates.data.ETH.quote &&
+        rates.data.ETH.quote.USD &&
+        rates.data.ETH.quote.USD.price
+      ) {
+        const ETHUSDPrice = rates.data.ETH.quote.USD.price;
+        const amountOfEth = this.amount === '' ? 0 : this.amount;
+        const baseFee = 0.3 / ETHUSDPrice;
+        const mainFee = 0.0015 * amountOfEth;
+        const maxFee = 10 / ETHUSDPrice;
+        if (baseFee + mainFee > maxFee) {
+          this.safeSendPriceEstimate = isNaN(maxFee.toFixed(3))
+            ? 0
+            : maxFee.toFixed(3);
+        } else {
+          this.safeSendPriceEstimate = isNaN((baseFee + mainFee).toFixed(3))
+            ? 0
+            : (baseFee + mainFee).toFixed(3);
+        }
       } else {
-        this.safeSendPriceEstimate = (baseFee + mainFee).toFixed(3);
+        this.safeSendPriceEstimate = 0;
       }
     },
     verifyAddr() {
