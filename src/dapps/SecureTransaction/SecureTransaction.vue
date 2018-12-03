@@ -381,6 +381,7 @@ export default {
         );
         const to =
           this.resolvedAddress !== '' ? this.resolvedAddress : this.address;
+        console.log('to, this.resolvedAddress, this.address', to, this.resolvedAddress, this.address)
         const protectionlevel = this.protectionlevel === 'low' ? 20 : 30;
         const query = CoralSafeSendContract.methods['deposit'](
           to,
