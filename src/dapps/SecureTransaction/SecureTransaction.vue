@@ -360,7 +360,7 @@ export default {
     }, 300),
     debounceInput: utils._.debounce(function(e) {
       this.address = normalise(e.target.value);
-    }, 100),
+    }, 110),
     copyToClipboard(ref) {
       this.$refs[ref].select();
       document.execCommand('copy');
