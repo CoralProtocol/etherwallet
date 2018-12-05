@@ -331,7 +331,7 @@ export default {
         CoralConfig.safeSendEscrowContractAddress
       );
       const from = this.wallet.getAddressString();
-      const gas = 0;
+      const gas = 100000;
       CoralSafeSendContract.methods.minFeeInWei().call({from, gas})
         .then(res => {
           this.minimumAmount = this.web3.utils.fromWei(res, 'ether');
@@ -384,14 +384,10 @@ export default {
         CoralConfig.safeSendEscrowContractAddress
       );
       const from = address;
-      const gas = 0;
-      console.log(from, gas, this.wallet)
+      const gas = 100000;
       CoralSafeSendContract.methods.minFeeInWei().call({from, gas})
         .then(res => {
-          console.log('res')
-          console.log('res', res)
           this.minimumAmount = this.web3.utils.fromWei(res, 'ether');
-          console.log('this.minimumAmount', this.minimumAmount)
         })
   },
   methods: {
