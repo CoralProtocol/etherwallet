@@ -4,429 +4,25 @@ const CoralConfig = {
   lowThreshold: 20,
   highThreshold: 30,
   chainID: 4,
+  chainIDEnglish: 'rinkeby',
   safeSendEscrowContractAddress: '0xFD76F0e10Ad6C55062Ed737F97076bB7BD4aAAF8',
   safeSendEscrowContractAbi: [
   	{
   		"constant": false,
-  		"inputs": [],
-  		"name": "pauseDeposits",
-  		"outputs": [],
-  		"payable": false,
-  		"stateMutability": "nonpayable",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "active",
-  		"outputs": [
+  		"inputs": [
   			{
-  				"name": "",
+  				"name": "_escrowIds",
+  				"type": "bytes32[]"
+  			},
+  			{
+  				"name": "_relay",
   				"type": "bool"
   			}
   		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "provider",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "address"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "getProfitThreshold",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": false,
-  		"inputs": [
-  			{
-  				"name": "_tokenAddress",
-  				"type": "address"
-  			},
-  			{
-  				"name": "_recipient",
-  				"type": "address"
-  			},
-  			{
-  				"name": "_amount",
-  				"type": "uint256"
-  			}
-  		],
-  		"name": "rescueOrphanedTokens",
-  		"outputs": [
-  			{
-  				"name": "_success",
-  				"type": "bool"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "nonpayable",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "getEscrowCount",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "getMargin",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": false,
-  		"inputs": [
-  			{
-  				"name": "_profitThreshold",
-  				"type": "uint256"
-  			},
-  			{
-  				"name": "_partner",
-  				"type": "bool"
-  			}
-  		],
-  		"name": "updateProfitThreshold",
+  		"name": "batchDeliver",
   		"outputs": [],
   		"payable": false,
   		"stateMutability": "nonpayable",
-  		"type": "function"
-  	},
-  	{
-  		"constant": false,
-  		"inputs": [
-  			{
-  				"name": "_newMinFee",
-  				"type": "uint256"
-  			}
-  		],
-  		"name": "updateMinimumFee",
-  		"outputs": [],
-  		"payable": false,
-  		"stateMutability": "nonpayable",
-  		"type": "function"
-  	},
-  	{
-  		"constant": false,
-  		"inputs": [
-  			{
-  				"name": "_newMaxFee",
-  				"type": "uint256"
-  			}
-  		],
-  		"name": "updateMaximumFee",
-  		"outputs": [],
-  		"payable": false,
-  		"stateMutability": "nonpayable",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "MIN_GAS_DELIVER",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": false,
-  		"inputs": [],
-  		"name": "unpauseDeposits",
-  		"outputs": [],
-  		"payable": false,
-  		"stateMutability": "nonpayable",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "MIN_FEE",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": false,
-  		"inputs": [
-  			{
-  				"name": "_newFeeRate",
-  				"type": "uint256"
-  			}
-  		],
-  		"name": "updateFeeRate",
-  		"outputs": [],
-  		"payable": false,
-  		"stateMutability": "nonpayable",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "minFeeInWei",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [
-  			{
-  				"name": "_amount",
-  				"type": "uint256"
-  			}
-  		],
-  		"name": "checkFee",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": false,
-  		"inputs": [
-  			{
-  				"name": "_escrowId",
-  				"type": "bytes32"
-  			}
-  		],
-  		"name": "withdraw",
-  		"outputs": [],
-  		"payable": false,
-  		"stateMutability": "nonpayable",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "MIN_GAS_WITHDRAWAL",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": false,
-  		"inputs": [
-  			{
-  				"name": "_tokenAddress",
-  				"type": "address"
-  			},
-  			{
-  				"name": "_recipient",
-  				"type": "address"
-  			},
-  			{
-  				"name": "_amount",
-  				"type": "uint256"
-  			}
-  		],
-  		"name": "rescueApprovedTokens",
-  		"outputs": [
-  			{
-  				"name": "_success",
-  				"type": "bool"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "nonpayable",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "feeRate",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "maxFeeInWei",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "MIN_GAS_DEPOSIT",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [
-  			{
-  				"name": "_escrowId",
-  				"type": "bytes32"
-  			}
-  		],
-  		"name": "viewEscrowProvider",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "address"
-  			},
-  			{
-  				"name": "",
-  				"type": "address"
-  			},
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			},
-  			{
-  				"name": "",
-  				"type": "uint8"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [
-  			{
-  				"name": "_escrowId",
-  				"type": "bytes32"
-  			}
-  		],
-  		"name": "viewEscrowUser",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "address"
-  			},
-  			{
-  				"name": "",
-  				"type": "address"
-  			},
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			},
-  			{
-  				"name": "",
-  				"type": "uint8"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "recoverer",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "address"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "partner",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "address"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
   		"type": "function"
   	},
   	{
@@ -471,63 +67,146 @@ const CoralConfig = {
   		"type": "function"
   	},
   	{
-  		"constant": true,
+  		"constant": false,
   		"inputs": [],
-  		"name": "getCurrentProfit",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			}
-  		],
+  		"name": "pauseDeposits",
+  		"outputs": [],
   		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [
-  			{
-  				"name": "_escrowId",
-  				"type": "bytes32"
-  			}
-  		],
-  		"name": "getEscrow",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "address"
-  			},
-  			{
-  				"name": "",
-  				"type": "address"
-  			},
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			},
-  			{
-  				"name": "",
-  				"type": "uint8"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
+  		"stateMutability": "nonpayable",
   		"type": "function"
   	},
   	{
   		"constant": false,
   		"inputs": [
   			{
-  				"name": "_escrowIds",
-  				"type": "bytes32[]"
+  				"name": "_tokenAddress",
+  				"type": "address"
   			},
   			{
-  				"name": "_relay",
+  				"name": "_recipient",
+  				"type": "address"
+  			},
+  			{
+  				"name": "_amount",
+  				"type": "uint256"
+  			}
+  		],
+  		"name": "rescueApprovedTokens",
+  		"outputs": [
+  			{
+  				"name": "_success",
   				"type": "bool"
   			}
   		],
-  		"name": "batchDeliver",
+  		"payable": false,
+  		"stateMutability": "nonpayable",
+  		"type": "function"
+  	},
+  	{
+  		"constant": false,
+  		"inputs": [
+  			{
+  				"name": "_tokenAddress",
+  				"type": "address"
+  			},
+  			{
+  				"name": "_recipient",
+  				"type": "address"
+  			},
+  			{
+  				"name": "_amount",
+  				"type": "uint256"
+  			}
+  		],
+  		"name": "rescueOrphanedTokens",
+  		"outputs": [
+  			{
+  				"name": "_success",
+  				"type": "bool"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "nonpayable",
+  		"type": "function"
+  	},
+  	{
+  		"constant": false,
+  		"inputs": [],
+  		"name": "unpauseDeposits",
+  		"outputs": [],
+  		"payable": false,
+  		"stateMutability": "nonpayable",
+  		"type": "function"
+  	},
+  	{
+  		"constant": false,
+  		"inputs": [
+  			{
+  				"name": "_newFeeRate",
+  				"type": "uint256"
+  			}
+  		],
+  		"name": "updateFeeRate",
+  		"outputs": [],
+  		"payable": false,
+  		"stateMutability": "nonpayable",
+  		"type": "function"
+  	},
+  	{
+  		"constant": false,
+  		"inputs": [
+  			{
+  				"name": "_newMaxFee",
+  				"type": "uint256"
+  			}
+  		],
+  		"name": "updateMaximumFee",
+  		"outputs": [],
+  		"payable": false,
+  		"stateMutability": "nonpayable",
+  		"type": "function"
+  	},
+  	{
+  		"constant": false,
+  		"inputs": [
+  			{
+  				"name": "_newMinFee",
+  				"type": "uint256"
+  			}
+  		],
+  		"name": "updateMinimumFee",
+  		"outputs": [],
+  		"payable": false,
+  		"stateMutability": "nonpayable",
+  		"type": "function"
+  	},
+  	{
+  		"constant": false,
+  		"inputs": [
+  			{
+  				"name": "_profitThreshold",
+  				"type": "uint256"
+  			},
+  			{
+  				"name": "_partner",
+  				"type": "bool"
+  			}
+  		],
+  		"name": "updateProfitThreshold",
+  		"outputs": [],
+  		"payable": false,
+  		"stateMutability": "nonpayable",
+  		"type": "function"
+  	},
+  	{
+  		"constant": false,
+  		"inputs": [
+  			{
+  				"name": "_escrowId",
+  				"type": "bytes32"
+  			}
+  		],
+  		"name": "withdraw",
   		"outputs": [],
   		"payable": false,
   		"stateMutability": "nonpayable",
@@ -683,6 +362,328 @@ const CoralConfig = {
   		],
   		"name": "LogFeeRateUpdated",
   		"type": "event"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "active",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "bool"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [
+  			{
+  				"name": "_amount",
+  				"type": "uint256"
+  			}
+  		],
+  		"name": "checkFee",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "feeRate",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "getCurrentProfit",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [
+  			{
+  				"name": "_escrowId",
+  				"type": "bytes32"
+  			}
+  		],
+  		"name": "getEscrow",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "address"
+  			},
+  			{
+  				"name": "",
+  				"type": "address"
+  			},
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			},
+  			{
+  				"name": "",
+  				"type": "uint8"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "getEscrowCount",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "getMargin",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "getProfitThreshold",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "maxFeeInWei",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "MIN_FEE",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "MIN_GAS_DELIVER",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "MIN_GAS_DEPOSIT",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "MIN_GAS_WITHDRAWAL",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "minFeeInWei",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "partner",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "address"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "provider",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "address"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "recoverer",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "address"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [
+  			{
+  				"name": "_escrowId",
+  				"type": "bytes32"
+  			}
+  		],
+  		"name": "viewEscrowProvider",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "address"
+  			},
+  			{
+  				"name": "",
+  				"type": "address"
+  			},
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			},
+  			{
+  				"name": "",
+  				"type": "uint8"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [
+  			{
+  				"name": "_escrowId",
+  				"type": "bytes32"
+  			}
+  		],
+  		"name": "viewEscrowUser",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "address"
+  			},
+  			{
+  				"name": "",
+  				"type": "address"
+  			},
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			},
+  			{
+  				"name": "",
+  				"type": "uint8"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
   	}
   ]
 };

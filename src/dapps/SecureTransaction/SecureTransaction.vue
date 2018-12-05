@@ -219,7 +219,7 @@
           ]"
           aria-hidden="true"
         />
-        You must use the mainnet network of your web3 provider (metamask, etc.) to use SafeSend.
+        You must use the {{chainIDEnglish}} network of your web3 provider (metamask, etc.) to use SafeSend.
       </div>
       <br />
       <div>
@@ -287,6 +287,7 @@ export default {
       validAmount: false,
       validNetwork: false,
       validAddress: false,
+      chainIDEnglish: CoralConfig.chainIDEnglish || 'mainnet',
       minimumAmount: 0,
       amount: 0,
       safeSendPriceEstimate: 0,
@@ -330,7 +331,7 @@ export default {
         CoralConfig.safeSendEscrowContractAddress
       );
       const from = this.wallet.getAddressString();
-      const gas = 100000;
+      const gas = 0;
       CoralSafeSendContract.methods.minFeeInWei().call({from, gas})
         .then(res => {
           this.minimumAmount = this.web3.utils.fromWei(res, 'ether');
@@ -373,7 +374,6 @@ export default {
         .then(res => {
           this.networkID = res;
           this.validNetwork = this.networkID === CoralConfig.chainID;
-          console.log('mount me', this.networkID, CoralConfig.chainID, this.validNetwork)
         })
         .catch(err => {
           // eslint-disable-next-line no-console
@@ -383,16 +383,16 @@ export default {
         CoralConfig.safeSendEscrowContractAbi,
         CoralConfig.safeSendEscrowContractAddress
       );
-      const from = this.wallet.getAddressString();
-      const gas = 100000;
+      const from = address;
+      const gas = 0;
+      console.log(from, gas, this.wallet)
       CoralSafeSendContract.methods.minFeeInWei().call({from, gas})
         .then(res => {
+          console.log('res')
+          console.log('res', res)
           this.minimumAmount = this.web3.utils.fromWei(res, 'ether');
+          console.log('this.minimumAmount', this.minimumAmount)
         })
-        .catch(err => {
-          // eslint-disable-next-line no-console
-          console.error(err);
-        });
   },
   methods: {
     debouncedAmount: utils._.debounce(function(e) {
