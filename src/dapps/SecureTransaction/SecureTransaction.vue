@@ -14,9 +14,6 @@
               Entire Balance
             </p>
           </div>
-          <span class="protection-fee-text"
-            >SafeSend Fee: ~{{ safeSendPriceEstimate }} ETH</span
-          >
 
           <div class="the-form amount-number">
             <input
@@ -94,6 +91,9 @@
           </div>
         </div>
       </div>
+      <span class="minimum-amount-text"
+        >Minimum amount: {{ minimumAmount }} ETH</span
+      >
     </div>
 
     <div class="send-form">
@@ -176,9 +176,6 @@
         </div>
       </div>
       <div
-        v-if="
-          network.type.chainID === 4 && selectedCurrency.name === 'Ethereum'
-        "
         class="advanced-content safe-send-container"
       >
         <div class="toggle-button-container">
@@ -220,14 +217,14 @@
 
     <div class="submit-button-container">
       <div>
-        Your estimated Safesend Fee (in addition to gas):&nbsp;~{{
+        Your estimated SafeSend Fee (in addition to gas):&nbsp;~{{
           safeSendPriceEstimate
         }}&nbsp;ETH
       </div>
       <br />
       <div
         :class="[
-          validAddress && address.length !== 0 ? '' : 'disabled',
+          validAddress && validAmount && validNetwork && address.length !== 0 ? '' : 'disabled',
           'submit-button large-round-button-green-filled'
         ]"
         @click="confirmationModalOpen"
@@ -281,7 +278,8 @@ export default {
     return {
       protectionLevel: 'low',
       advancedExpend: false,
-      validAddress: true,
+      validAmount: false,
+      validAddress: false,
       amount: 0,
       safeSendPriceEstimate: 0,
       amountValid: true,
@@ -318,6 +316,20 @@ export default {
         this.validAddress = true;
       }
     },
+    amount(newVal) {
+      const CoralSafeSendContract = new this.$store.state.web3.eth.Contract(
+        CoralConfig.safeSendEscrowContractAbi,
+        CoralConfig.safeSendEscrowContractAddress
+      );
+      const from = this.wallet.getAddressString();
+      const gas = 100000;
+      CoralSafeSendContract.methods.minFeeInWei().call({from, gas})
+        .then(res => {
+          this.minimumAmount = this.web3.utils.fromWei(res, 'ether');
+          this.validAmount = parseFloat(res, 10) > ((10 ** 18) * parseFloat(newVal, 10));
+        })
+
+    },
     parsedBalance(newVal) {
       this.parsedBalance = newVal;
     },
@@ -335,6 +347,7 @@ export default {
   },
   mounted() {
     const address = this.$store.state.wallet.getAddressString();
+
     this.web3.eth
       .getBalance(address)
       .then(res => {
@@ -347,6 +360,30 @@ export default {
         // eslint-disable-next-line no-console
         console.error(err);
       });
+      this.web3.eth.net
+        .getId()
+        .then(res => {
+          this.networkID = res;
+          this.validNetwork = this.networkID === CoralConfig.chainID;
+        })
+        .catch(err => {
+          // eslint-disable-next-line no-console
+          console.error(err);
+        });
+      const CoralSafeSendContract = new this.$store.state.web3.eth.Contract(
+        CoralConfig.safeSendEscrowContractAbi,
+        CoralConfig.safeSendEscrowContractAddress
+      );
+      const from = this.wallet.getAddressString();
+      const gas = 100000;
+      CoralSafeSendContract.methods.minFeeInWei().call({from, gas})
+        .then(res => {
+          this.minimumAmount = this.web3.utils.fromWei(res, 'ether');
+        })
+        .catch(err => {
+          // eslint-disable-next-line no-console
+          console.error(err);
+        });
   },
   methods: {
     debouncedAmount: utils._.debounce(function(e) {
@@ -369,44 +406,39 @@ export default {
         this.wallet.getAddressString(),
         'latest'
       );
-      const chainID = await this.$store.state.web3.eth.net.getNetworkType();
+      const value = this.amount === '' ? 0 : unit.toWei(this.amount, 'ether');
+      const CoralSafeSendContract = new this.$store.state.web3.eth.Contract(
+        CoralConfig.safeSendEscrowContractAbi,
+        CoralConfig.safeSendEscrowContractAddress
+      );
+      const to =
+        this.resolvedAddress !== '' ? this.resolvedAddress : this.address;
+      const protectionLevel =
+        CoralConfig[`${this.protectionLevel}Threshold`];
+      const query = CoralSafeSendContract.methods['deposit'](
+        to,
+        protectionLevel
+      );
+      const encodedABI = query.encodeABI();
+      const gasLimit =
+        parseInt(this.gasLimit) > CoralConfig.gasLimitSuggestion
+          ? this.gasLimit
+          : CoralConfig.gasLimitSuggestion; // assures minimum gas is provided
+      this.raw = {
+        from: this.$store.state.wallet.getAddressString(),
+        value: value,
+        to: CoralConfig.safeSendEscrowContractAddress,
+        nonce: this.nonce,
+        gas: gasLimit,
+        data: encodedABI,
+        gasPrice: Number(unit.toWei(this.$store.state.gasPrice, 'gwei')),
+        chainId: CoralConfig.chainID || 1
+      };
 
-      if (chainID === CoralConfig.chainID) {
-        const value = this.amount === '' ? 0 : unit.toWei(this.amount, 'ether');
-        const safeSendContractAddress =
-          CoralConfig.safeSendEscrowContractAddress;
-        const CoralSafeSendContract = new this.$store.state.web3.eth.Contract(
-          CoralConfig.safeSendEscrowContractAbi,
-          safeSendContractAddress
-        );
-        const to =
-          this.resolvedAddress !== '' ? this.resolvedAddress : this.address;
-        const protectionLevel = this.protectionLevel === 'low' ? 20 : 30;
-        const query = CoralSafeSendContract.methods['deposit'](
-          to,
-          protectionLevel
-        );
-        const encodedABI = query.encodeABI();
-        const gasLimit =
-          parseInt(this.gasLimit) > CoralConfig.gasLimitSuggestion
-            ? this.gasLimit
-            : CoralConfig.gasLimitSuggestion; // assures minimum gas is provided
-        this.raw = {
-          from: this.$store.state.wallet.getAddressString(),
-          value: value,
-          to: safeSendContractAddress,
-          nonce: this.nonce,
-          gas: gasLimit,
-          data: encodedABI,
-          gasPrice: Number(unit.toWei(this.$store.state.gasPrice, 'gwei')),
-          chainId: CoralConfig.chainID || 1
-        };
-
-        if (this.address === '') {
-          delete this.raw['to'];
-        }
-        this.$store.state.web3.eth.sendTransaction(this.raw);
+      if (this.address === '') {
+        delete this.raw['to'];
       }
+      this.$store.state.web3.eth.sendTransaction(this.raw);
     },
     confirmationModalOpen() {
       this.createTx();
@@ -447,7 +479,7 @@ export default {
           jsonInterface,
           this.selectedCurrency.addr
         );
-        this.data = contract.methods
+        this.data = contract.methods['minFeeInWei']
           .transfer(
             this.address,
             new BigNumber(amount)
@@ -496,11 +528,11 @@ export default {
         rates &&
         rates.data &&
         rates.data.ETH &&
-        rates.data.ETH.quote &&
-        rates.data.ETH.quote.USD &&
-        rates.data.ETH.quote.USD.price
+        rates.data.ETH.quotes &&
+        rates.data.ETH.quotes.USD &&
+        rates.data.ETH.quotes.USD.price
       ) {
-        const ETHUSDPrice = rates.data.ETH.quote.USD.price;
+        const ETHUSDPrice = rates.data.ETH.quotes.USD.price;
         const amountOfEth = this.amount === '' ? 0 : this.amount;
         const baseFee = 0.3 / ETHUSDPrice;
         const mainFee = 0.0015 * amountOfEth;

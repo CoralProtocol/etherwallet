@@ -1,7 +1,9 @@
 /* eslint-disable */
 const CoralConfig = {
   gasLimitSuggestion: 210000,
-  chainID: 'rinkeby',
+  lowThreshold: 20,
+  highThreshold: 30,
+  chainID: 4,
   safeSendEscrowContractAddress: '0xFD76F0e10Ad6C55062Ed737F97076bB7BD4aAAF8',
   safeSendEscrowContractAbi: [
   	{
