@@ -19,18 +19,15 @@
             <input
               :value="amount"
               type="number"
+              step="any"
               placeholder="Amount"
               @input="debouncedAmount"
             />
             <i
               :class="[
-                selectedCurrency.name === 'Ether'
-                  ? parsedBalance < amount
+                  parsedBalance < amount || amount < minimumAmount
                     ? 'not-good'
-                    : ''
-                  : selectedCurrency.balance < amount
-                  ? 'not-good'
-                  : '',
+                    : '',
                 'fa fa-check-circle good-button'
               ]"
               aria-hidden="true"
@@ -38,9 +35,7 @@
           </div>
           <div
             v-if="
-              selectedCurrency.name === 'Ether'
-                ? amount > parsedBalance
-                : selectedCurrency.balance < amount
+              amount > parsedBalance
             "
             class="error-message-container"
           >
@@ -217,6 +212,17 @@
 
     <div class="submit-button-container">
       <div>
+        <i
+          :class="[
+            validNetwork ? '' : 'not-good',
+            'fa fa-check-circle good-button'
+          ]"
+          aria-hidden="true"
+        />
+        You must use the mainnet network of your web3 provider (metamask, etc.) to use SafeSend.
+      </div>
+      <br />
+      <div>
         Your estimated SafeSend Fee (in addition to gas):&nbsp;~{{
           safeSendPriceEstimate
         }}&nbsp;ETH
@@ -279,7 +285,9 @@ export default {
       protectionLevel: 'low',
       advancedExpend: false,
       validAmount: false,
+      validNetwork: false,
       validAddress: false,
+      minimumAmount: 0,
       amount: 0,
       safeSendPriceEstimate: 0,
       amountValid: true,
@@ -326,7 +334,7 @@ export default {
       CoralSafeSendContract.methods.minFeeInWei().call({from, gas})
         .then(res => {
           this.minimumAmount = this.web3.utils.fromWei(res, 'ether');
-          this.validAmount = parseFloat(res, 10) > ((10 ** 18) * parseFloat(newVal, 10));
+          this.validAmount =  ((10 ** 18) * parseFloat(newVal, 10)) >= parseFloat(res, 10);
         })
 
     },
@@ -365,6 +373,7 @@ export default {
         .then(res => {
           this.networkID = res;
           this.validNetwork = this.networkID === CoralConfig.chainID;
+          console.log('mount me', this.networkID, CoralConfig.chainID, this.validNetwork)
         })
         .catch(err => {
           // eslint-disable-next-line no-console
@@ -388,12 +397,11 @@ export default {
   methods: {
     debouncedAmount: utils._.debounce(function(e) {
       this.amount = new BigNumber(e.target.value).decimalPlaces(18).toFixed();
-      e.target.value = this.amount;
       this.getSafeSendFee();
       if (this.verifyAddr()) {
         this.estimateGas();
       }
-    }, 300),
+    }, 500),
     debounceInput: utils._.debounce(function(e) {
       this.address = normalise(e.target.value);
     }, 110),
