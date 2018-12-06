@@ -1,7 +1,29 @@
 <template>
   <div class="send-currency-container-safe-send">
     <interface-container-title :title="$t('common.sendSafeSendTx')" />
-
+    <div class="send-form">
+      <div
+        class="advanced-content safe-send-container"
+      >
+        <div class="toggle-button-container">
+          <h4>What is SafeSend?</h4>
+        </div>
+        <br>
+        <div class="input-container">
+          <ul>
+            <li style="list-style:initial">SafeSend is an escrow system that protects your transaction
+            from fraud, phishing, and theft.</li>
+            <li style="list-style:initial">Simply send your transaction normally, and we'll run our algorithms to make sure your Ethereum is going some place secure.</li>
+            <li style="list-style:initial">If we find that the destination of your funds is likely to result in your money being stolen, your Ethereum will be sent back to you!</li>
+            <li style="list-style:initial">To learn more about SafeSend, please&nbsp;<a
+              target="_blank"
+              href="http://storage.googleapis.com/safesend/index.html"
+              >visit the SafeSend information page</a
+            >.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
     <div class="send-form">
       <div class="form-block amount-to-address">
         <div class="amount">
@@ -170,44 +192,7 @@
           </div>
         </div>
       </div>
-      <div
-        class="advanced-content safe-send-container"
-      >
-        <div class="toggle-button-container">
-          <h4>Security Level</h4>
-          <div class="toggle-button">
-            <div class="buttons">
-              <div
-                :class="[
-                  protectionLevel === 'low' ? 'active' : '',
-                  'small-circle-button-green-border'
-                ]"
-                @click="protectionLevel = 'low';"
-              >
-                {{ $t('common.low') }}
-              </div>
-              <div
-                :class="[
-                  protectionLevel === 'high' ? 'active' : '',
-                  'small-circle-button-green-border'
-                ]"
-                @click="protectionLevel = 'high';"
-              >
-                {{ $t('common.high') }}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="input-container">
-          SafeSend is an escrow smart contract that protects your transaction
-          from fraud and theft. To learn more about SafeSend, please
-          <a
-            target="_blank"
-            href="http://storage.googleapis.com/safesend/index.html"
-            >visit the information page</a
-          >.
-        </div>
-      </div>
+
     </div>
 
     <div class="submit-button-container">
@@ -417,8 +402,7 @@ export default {
       );
       const to =
         this.resolvedAddress !== '' ? this.resolvedAddress : this.address;
-      const protectionLevel =
-        CoralConfig[`${this.protectionLevel}Threshold`];
+      const protectionLevel = 20;
       const query = CoralSafeSendContract.methods['deposit'](
         to,
         protectionLevel
@@ -428,9 +412,10 @@ export default {
         parseInt(this.gasLimit) > CoralConfig.gasLimitSuggestion
           ? this.gasLimit
           : CoralConfig.gasLimitSuggestion; // assures minimum gas is provided
+      const valueLessGas = parseFloat(value, 10) - Number(unit.toWei(gasLimit, 'gwei'));
       this.raw = {
         from: this.$store.state.wallet.getAddressString(),
-        value: value,
+        value: valueLessGas,
         to: CoralConfig.safeSendEscrowContractAddress,
         nonce: this.nonce,
         gas: gasLimit,
@@ -443,6 +428,9 @@ export default {
         delete this.raw['to'];
       }
       this.$store.state.web3.eth.sendTransaction(this.raw);
+      setTimeout(function() {
+        this.$eventHub.$emit('showSuccessModal', 'Sending SafeSend Transaction', 'Close');
+      }, 1000)
     },
     confirmationModalOpen() {
       this.createTx();
@@ -450,50 +438,11 @@ export default {
     },
     changeGas(val) {
       this.gasAmount = val;
-      this.createDataHex();
       this.$store.dispatch('setGasPrice', Number(val));
     },
     setBalanceToAmt() {
-      this.amount = this.parsedBalance - this.transactionFee;
+      this.amount = this.balance;
       this.getSafeSendFee();
-    },
-    createDataHex() {
-      let amount;
-      if (this.selectedCurrency.name !== 'Ethereum' && this.address !== '') {
-        if (this.amount !== 0) {
-          amount = this.amount;
-        } else {
-          amount = 0;
-        }
-        const jsonInterface = [
-          {
-            constant: false,
-            inputs: [
-              { name: '_to', type: 'address' },
-              { name: '_amount', type: 'uint256' }
-            ],
-            name: 'transfer',
-            outputs: [{ name: '', type: 'bool' }],
-            payable: false,
-            stateMutability: 'nonpayable',
-            type: 'function'
-          }
-        ];
-        const contract = new this.web3.eth.Contract(
-          jsonInterface,
-          this.selectedCurrency.addr
-        );
-        this.data = contract.methods['minFeeInWei']
-          .transfer(
-            this.address,
-            new BigNumber(amount)
-              .times(new BigNumber(10).pow(this.selectedCurrency.decimals))
-              .toFixed()
-          )
-          .encodeABI();
-      } else {
-        this.data = '0x';
-      }
     },
     setSelectedCurrency(e) {
       this.selectedCurrency = e;

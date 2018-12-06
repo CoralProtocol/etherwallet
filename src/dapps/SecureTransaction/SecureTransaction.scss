@@ -16,6 +16,9 @@
   .send-form {
     @extend %send-form-base;
 
+    .title {
+      margin-bottom: 12px;
+    }
     .title-container {
       .title {
         display: flex;
@@ -240,7 +243,7 @@
   }
 
   .submit-button-container {
-    padding: 60px 0;
+    padding: 20px 0;
     text-align: center;
 
     .bottom-text {
