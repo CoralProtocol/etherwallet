@@ -2,24 +2,31 @@
   <div class="send-currency-container-safe-send">
     <interface-container-title :title="$t('common.sendSafeSendTx')" />
     <div class="send-form">
-      <div
-        class="advanced-content safe-send-container"
-      >
-        <div class="toggle-button-container">
-          <h4>What is SafeSend?</h4>
-        </div>
-        <br>
+      <div class="advanced-content safe-send-container">
+        <div class="toggle-button-container"><h4>What is SafeSend?</h4></div>
+        <br />
         <div class="input-container">
           <ul>
-            <li style="list-style:initial">SafeSend is an escrow system that protects your transaction
-            from fraud, phishing, and theft.</li>
-            <li style="list-style:initial">Simply send your transaction normally, and we'll run our algorithms to make sure your Ethereum is going some place secure.</li>
-            <li style="list-style:initial">If we find that the destination of your funds is likely to result in your money being stolen, your Ethereum will be sent back to you!</li>
-            <li style="list-style:initial">To learn more about SafeSend, please&nbsp;<a
-              target="_blank"
-              href="http://storage.googleapis.com/safesend/index.html"
-              >visit the SafeSend information page</a
-            >.</li>
+            <li style="list-style:initial">
+              SafeSend is an escrow system that protects your transaction from
+              fraud, phishing, and theft.
+            </li>
+            <li style="list-style:initial">
+              Simply send your transaction normally, and we'll run our
+              algorithms to make sure your Ethereum is going some place secure.
+            </li>
+            <li style="list-style:initial">
+              If we find that the destination of your funds is likely to result
+              in your money being stolen, your Ethereum will be sent back to
+              you!
+            </li>
+            <li style="list-style:initial">
+              To learn more about SafeSend, please&nbsp;<a
+                target="_blank"
+                href="http://storage.googleapis.com/safesend/index.html"
+                >visit the SafeSend information page</a
+              >.
+            </li>
           </ul>
         </div>
       </div>
@@ -47,21 +54,19 @@
             />
             <i
               :class="[
-                  parsedBalance < amount || amount < minimumAmount
-                    ? 'not-good'
-                    : '',
+                parsedBalance < amount || amount < minimumAmount
+                  ? 'not-good'
+                  : '',
                 'fa fa-check-circle good-button'
               ]"
               aria-hidden="true"
             />
           </div>
-          <div
-            v-if="
-              amount > parsedBalance
-            "
-            class="error-message-container"
-          >
+          <div v-if="amount > parsedBalance" class="error-message-container">
             <p>{{ $t('common.dontHaveEnough') }}</p>
+          </div>
+          <div v-if="amount < minFeeInWei" class="error-message-container">
+            <p>Not above minimum</p>
           </div>
         </div>
         <div class="to-address">
@@ -192,7 +197,6 @@
           </div>
         </div>
       </div>
-
     </div>
 
     <div class="submit-button-container">
@@ -204,7 +208,8 @@
           ]"
           aria-hidden="true"
         />
-        You must use the {{chainIDEnglish}} network of your web3 provider (metamask, etc.) to use SafeSend.
+        You must use the {{ chainIDEnglish }} network of your web3 provider
+        (metamask, etc.) to use SafeSend.
       </div>
       <br />
       <div>
@@ -215,7 +220,9 @@
       <br />
       <div
         :class="[
-          validAddress && validAmount && validNetwork && address.length !== 0 ? '' : 'disabled',
+          validAddress && validAmount && validNetwork && address.length !== 0
+            ? ''
+            : 'disabled',
           'submit-button large-round-button-green-filled'
         ]"
         @click="confirmationModalOpen"
@@ -317,12 +324,14 @@ export default {
       );
       const from = this.wallet.getAddressString();
       const gas = 100000;
-      CoralSafeSendContract.methods.minFeeInWei().call({from, gas})
+      CoralSafeSendContract.methods
+        .minFeeInWei()
+        .call({ from, gas })
         .then(res => {
           this.minimumAmount = this.web3.utils.fromWei(res, 'ether');
-          this.validAmount =  ((10 ** 18) * parseFloat(newVal, 10)) >= parseFloat(res, 10);
-        })
-
+          this.validAmount =
+            10 ** 18 * parseFloat(newVal, 10) >= parseFloat(res, 10);
+        });
     },
     parsedBalance(newVal) {
       this.parsedBalance = newVal;
@@ -354,30 +363,35 @@ export default {
         // eslint-disable-next-line no-console
         console.error(err);
       });
-      this.web3.eth.net
-        .getId()
-        .then(res => {
-          this.networkID = res;
-          this.validNetwork = this.networkID === CoralConfig.chainID;
-        })
-        .catch(err => {
-          // eslint-disable-next-line no-console
-          console.error(err);
-        });
-      const CoralSafeSendContract = new this.$store.state.web3.eth.Contract(
-        CoralConfig.safeSendEscrowContractAbi,
-        CoralConfig.safeSendEscrowContractAddress
-      );
-      const from = address;
-      const gas = 100000;
-      CoralSafeSendContract.methods.minFeeInWei().call({from, gas})
-        .then(res => {
-          this.minimumAmount = this.web3.utils.fromWei(res, 'ether');
-        })
+    this.web3.eth.net
+      .getId()
+      .then(res => {
+        this.networkID = res;
+        this.validNetwork = this.networkID === CoralConfig.chainID;
+      })
+      .catch(err => {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      });
+    const CoralSafeSendContract = new this.$store.state.web3.eth.Contract(
+      CoralConfig.safeSendEscrowContractAbi,
+      CoralConfig.safeSendEscrowContractAddress
+    );
+    const from = address;
+    const gas = 100000;
+    CoralSafeSendContract.methods
+      .minFeeInWei()
+      .call({ from, gas })
+      .then(res => {
+        this.minimumAmount = this.web3.utils.fromWei(res, 'ether');
+      });
   },
   methods: {
     debouncedAmount: utils._.debounce(function(e) {
-      this.amount = new BigNumber(e.target.value).decimalPlaces(18).toFixed();
+      this.amount = parseInt(
+        new BigNumber(e.target.value).decimalPlaces(18).toFixed(),
+        10
+      );
       this.getSafeSendFee();
       if (this.verifyAddr()) {
         this.estimateGas();
@@ -412,7 +426,8 @@ export default {
         parseInt(this.gasLimit) > CoralConfig.gasLimitSuggestion
           ? this.gasLimit
           : CoralConfig.gasLimitSuggestion; // assures minimum gas is provided
-      const valueLessGas = parseFloat(value, 10) - Number(unit.toWei(gasLimit, 'gwei'));
+      const valueLessGas =
+        parseFloat(value, 10) - Number(unit.toWei(gasLimit, 'gwei'));
       this.raw = {
         from: this.$store.state.wallet.getAddressString(),
         value: valueLessGas,
@@ -428,9 +443,6 @@ export default {
         delete this.raw['to'];
       }
       this.$store.state.web3.eth.sendTransaction(this.raw);
-      setTimeout(function() {
-        this.$eventHub.$emit('showSuccessModal', 'Sending SafeSend Transaction', 'Close');
-      }, 1000)
     },
     confirmationModalOpen() {
       this.createTx();

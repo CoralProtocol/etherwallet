@@ -38,7 +38,7 @@
       :confirm-sign-message="messageReturn"
       :show-success="showSuccessModal"
       :message-to-sign="messageToSign"
-      :signed-message="signedMessage" 
+      :signed-message="signedMessage"
       :is-hardware-wallet="isHardwareWallet"
       :from="fromAddress"
     />
