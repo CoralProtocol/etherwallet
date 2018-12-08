@@ -3,31 +3,18 @@
     <interface-container-title :title="$t('common.sendSafeSendTx')" />
     <div class="send-form">
       <div class="advanced-content safe-send-container">
-        <div class="toggle-button-container"><h4>What is SafeSend?</h4></div>
-        <br />
         <div class="input-container">
-          <ul>
-            <li style="list-style:initial">
-              SafeSend is an escrow system that protects your transaction from
-              fraud, phishing, and theft.
-            </li>
-            <li style="list-style:initial">
-              Simply send your transaction normally, and we'll run our
-              algorithms to make sure your Ethereum is going some place secure.
-            </li>
-            <li style="list-style:initial">
-              If we find that the destination of your funds is likely to result
-              in your money being stolen, your Ethereum will be sent back to
-              you!
-            </li>
-            <li style="list-style:initial">
-              To learn more about SafeSend, please&nbsp;<a
-                target="_blank"
-                href="http://storage.googleapis.com/safesend/index.html"
-                >visit the SafeSend information page</a
-              >.
-            </li>
-          </ul>
+          <div style="width:55%;font-size:16px">
+            <strong><span style='color:#05c0a5;font-size:16px'>SafeSend</span> is an escrow system that protects your transaction from
+            fraud, phishing, and theft.</strong>
+          </div>
+          <br />
+          <div>
+            Simply send your transaction through this page and our fraud detection algorithms get to work.
+            If we find that your destination address is likely to result
+            in your money being stolen, your Ethereum will be sent back to
+            you.
+          </div>
         </div>
       </div>
     </div>
@@ -64,9 +51,6 @@
           </div>
           <div v-if="amount > parsedBalance" class="error-message-container">
             <p>{{ $t('common.dontHaveEnough') }}</p>
-          </div>
-          <div v-if="amount < minFeeInWei" class="error-message-container">
-            <p>Not above minimum</p>
           </div>
         </div>
         <div class="to-address">
@@ -232,7 +216,7 @@
       <interface-bottom-text
         :link-text="$t('interface.learnMore')"
         :question="$t('interface.haveIssues')"
-        link="mailto:support@myetherwallet.com"
+        link="http://storage.googleapis.com/safesend/index.html"
       />
     </div>
   </div>
