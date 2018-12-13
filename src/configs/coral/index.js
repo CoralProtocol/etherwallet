@@ -1,17 +1,17 @@
 /* eslint-disable */
 const CoralConfig = {
-  gasLimitSuggestion: 210000,
+  gasLimitSuggestion: 300000,
   lowThreshold: 20,
   highThreshold: 30,
-  chainID: 4,
-  chainIDEnglish: 'rinkeby',
-  safeSendEscrowContractAddress: '0xFD76F0e10Ad6C55062Ed737F97076bB7BD4aAAF8',
+  chainID: 1,
+  chainIDEnglish: 'mainnet',
+  safeSendEscrowContractAddress: '0x05573c312bdbc684a091fe2aa0a8f7a315b3de29',
   safeSendEscrowContractAbi: [
   	{
   		"constant": false,
   		"inputs": [
   			{
-  				"name": "_escrowIds",
+  				"name": "_ids",
   				"type": "bytes32[]"
   			},
   			{
@@ -29,7 +29,7 @@ const CoralConfig = {
   		"constant": false,
   		"inputs": [
   			{
-  				"name": "_escrowId",
+  				"name": "_id",
   				"type": "bytes32"
   			},
   			{
@@ -202,7 +202,7 @@ const CoralConfig = {
   		"constant": false,
   		"inputs": [
   			{
-  				"name": "_escrowId",
+  				"name": "_id",
   				"type": "bytes32"
   			}
   		],
@@ -261,7 +261,7 @@ const CoralConfig = {
   				"type": "bytes32"
   			}
   		],
-  		"name": "LogEscrowDeposit",
+  		"name": "LogSafeSendDeposit",
   		"type": "event"
   	},
   	{
@@ -273,7 +273,7 @@ const CoralConfig = {
   				"type": "bytes32"
   			}
   		],
-  		"name": "LogEscrowWithdrawal",
+  		"name": "LogSafeSendWithdrawal",
   		"type": "event"
   	},
   	{
@@ -285,7 +285,7 @@ const CoralConfig = {
   				"type": "bytes32"
   			}
   		],
-  		"name": "LogEscrowDeliver",
+  		"name": "LogSafeSendDeliver",
   		"type": "event"
   	},
   	{
@@ -426,13 +426,41 @@ const CoralConfig = {
   	},
   	{
   		"constant": true,
+  		"inputs": [],
+  		"name": "getMargin",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
+  		"name": "getProfitThreshold",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
   		"inputs": [
   			{
-  				"name": "_escrowId",
+  				"name": "_id",
   				"type": "bytes32"
   			}
   		],
-  		"name": "getEscrow",
+  		"name": "getSafeSend",
   		"outputs": [
   			{
   				"name": "",
@@ -458,35 +486,7 @@ const CoralConfig = {
   	{
   		"constant": true,
   		"inputs": [],
-  		"name": "getEscrowCount",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "getMargin",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "getProfitThreshold",
+  		"name": "getSafeSendCount",
   		"outputs": [
   			{
   				"name": "",
@@ -627,11 +627,11 @@ const CoralConfig = {
   		"constant": true,
   		"inputs": [
   			{
-  				"name": "_escrowId",
+  				"name": "_id",
   				"type": "bytes32"
   			}
   		],
-  		"name": "viewEscrowProvider",
+  		"name": "viewSafeSendProvider",
   		"outputs": [
   			{
   				"name": "",
@@ -658,11 +658,11 @@ const CoralConfig = {
   		"constant": true,
   		"inputs": [
   			{
-  				"name": "_escrowId",
+  				"name": "_id",
   				"type": "bytes32"
   			}
   		],
-  		"name": "viewEscrowUser",
+  		"name": "viewSafeSendUser",
   		"outputs": [
   			{
   				"name": "",

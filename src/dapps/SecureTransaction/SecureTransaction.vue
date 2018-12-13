@@ -5,15 +5,14 @@
       <div class="advanced-content safe-send-container">
         <div class="input-container">
           <div style="width:55%;font-size:16px">
-            <strong><span style='color:#05c0a5;font-size:16px'>SafeSend</span> is an escrow system that protects your transaction from
-            fraud, phishing, and theft.</strong>
+            <strong><span style='color:#05c0a5;font-size:16px'>SafeSend</span>&nbsp;protects your transaction from fraud, phishing, and theft.</strong>
           </div>
           <br />
           <div>
-            Simply send your transaction through this page and our fraud detection algorithms get to work.
-            If we find that your destination address is likely to result
-            in your money being stolen, your Ethereum will be sent back to
-            you.
+            Simply send your transaction through this page and our fraud
+            detection algorithms get to work. If we find that your destination
+            address is likely to result in your money being stolen, your
+            Ethereum will be sent back to you.
           </div>
         </div>
       </div>
@@ -41,9 +40,9 @@
             />
             <i
               :class="[
-                parsedBalance < amount || amount < minimumAmount
-                  ? 'not-good'
-                  : '',
+                validAmount
+                  ? ''
+                  : 'not-good',
                 'fa fa-check-circle good-button'
               ]"
               aria-hidden="true"
@@ -152,37 +151,6 @@
         </div>
       </div>
     </div>
-    <div class="send-form advanced">
-      <div class="advanced-content">
-        <div class="toggle-button-container">
-          <h4>Advanced</h4>
-          <div class="toggle-button">
-            <span>Gas Limited</span>
-            <!-- Rounded switch -->
-            <div class="sliding-switch-white">
-              <label class="switch">
-                <input
-                  type="checkbox"
-                  @click="advancedExpend = !advancedExpend;"
-                />
-                <span class="slider round" />
-              </label>
-            </div>
-          </div>
-        </div>
-        <div v-if="advancedExpend" class="input-container">
-          <div class="the-form user-input">
-            <input
-              v-model="gasLimit"
-              :placeholder="$t('common.gasLimit')"
-              type="number"
-              name=""
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="submit-button-container">
       <div>
         <i
@@ -216,7 +184,7 @@
       <interface-bottom-text
         :link-text="$t('interface.learnMore')"
         :question="$t('interface.haveIssues')"
-        link="http://storage.googleapis.com/safesend/index.html"
+        link="https://heycoral.com/safesend/index.html"
       />
     </div>
   </div>
@@ -264,7 +232,7 @@ export default {
       validNetwork: false,
       validAddress: false,
       chainIDEnglish: CoralConfig.chainIDEnglish || 'mainnet',
-      minimumAmount: 0,
+      minimumAmount: 0.01,
       amount: 0,
       safeSendPriceEstimate: 0,
       amountValid: true,
@@ -301,21 +269,8 @@ export default {
         this.validAddress = true;
       }
     },
-    amount(newVal) {
-      const CoralSafeSendContract = new this.$store.state.web3.eth.Contract(
-        CoralConfig.safeSendEscrowContractAbi,
-        CoralConfig.safeSendEscrowContractAddress
-      );
-      const from = this.wallet.getAddressString();
-      const gas = 100000;
-      CoralSafeSendContract.methods
-        .minFeeInWei()
-        .call({ from, gas })
-        .then(res => {
-          this.minimumAmount = this.web3.utils.fromWei(res, 'ether');
-          this.validAmount =
-            10 ** 18 * parseFloat(newVal, 10) >= parseFloat(res, 10);
-        });
+    amount() {
+      this.validAmount = this.amount >= parseFloat(this.minimumAmount, 10) && this.amount <= parseFloat(this.parsedBalance, 10)
     },
     parsedBalance(newVal) {
       this.parsedBalance = newVal;
@@ -357,22 +312,11 @@ export default {
         // eslint-disable-next-line no-console
         console.error(err);
       });
-    const CoralSafeSendContract = new this.$store.state.web3.eth.Contract(
-      CoralConfig.safeSendEscrowContractAbi,
-      CoralConfig.safeSendEscrowContractAddress
-    );
-    const from = address;
-    const gas = 100000;
-    CoralSafeSendContract.methods
-      .minFeeInWei()
-      .call({ from, gas })
-      .then(res => {
-        this.minimumAmount = this.web3.utils.fromWei(res, 'ether');
-      });
+
   },
   methods: {
     debouncedAmount: utils._.debounce(function(e) {
-      this.amount = parseInt(
+      this.amount = parseFloat(
         new BigNumber(e.target.value).decimalPlaces(18).toFixed(),
         10
       );
@@ -406,10 +350,7 @@ export default {
         protectionLevel
       );
       const encodedABI = query.encodeABI();
-      const gasLimit =
-        parseInt(this.gasLimit) > CoralConfig.gasLimitSuggestion
-          ? this.gasLimit
-          : CoralConfig.gasLimitSuggestion; // assures minimum gas is provided
+      const gasLimit = CoralConfig.gasLimitSuggestion;
       const valueLessGas =
         parseFloat(value, 10) - Number(unit.toWei(gasLimit, 'gwei'));
       this.raw = {
