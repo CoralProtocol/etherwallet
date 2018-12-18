@@ -5,13 +5,13 @@ const CoralConfig = {
   highThreshold: 30,
   chainID: 1,
   chainIDEnglish: 'mainnet',
-  safeSendEscrowContractAddress: '0x05573c312bdbc684a091fe2aa0a8f7a315b3de29',
+  safeSendEscrowContractAddress: '0xdfA32A517D26a193321277Ef1b486c68cfA58aEA',
   safeSendEscrowContractAbi: [
   	{
   		"constant": false,
   		"inputs": [
   			{
-  				"name": "_ids",
+  				"name": "_itemIds",
   				"type": "bytes32[]"
   			},
   			{
@@ -29,7 +29,7 @@ const CoralConfig = {
   		"constant": false,
   		"inputs": [
   			{
-  				"name": "_id",
+  				"name": "_itemId",
   				"type": "bytes32"
   			},
   			{
@@ -71,33 +71,6 @@ const CoralConfig = {
   		"inputs": [],
   		"name": "pauseDeposits",
   		"outputs": [],
-  		"payable": false,
-  		"stateMutability": "nonpayable",
-  		"type": "function"
-  	},
-  	{
-  		"constant": false,
-  		"inputs": [
-  			{
-  				"name": "_tokenAddress",
-  				"type": "address"
-  			},
-  			{
-  				"name": "_recipient",
-  				"type": "address"
-  			},
-  			{
-  				"name": "_amount",
-  				"type": "uint256"
-  			}
-  		],
-  		"name": "rescueApprovedTokens",
-  		"outputs": [
-  			{
-  				"name": "_success",
-  				"type": "bool"
-  			}
-  		],
   		"payable": false,
   		"stateMutability": "nonpayable",
   		"type": "function"
@@ -202,7 +175,7 @@ const CoralConfig = {
   		"constant": false,
   		"inputs": [
   			{
-  				"name": "_id",
+  				"name": "_itemId",
   				"type": "bytes32"
   			}
   		],
@@ -261,7 +234,7 @@ const CoralConfig = {
   				"type": "bytes32"
   			}
   		],
-  		"name": "LogSafeSendDeposit",
+  		"name": "LogItemDeposit",
   		"type": "event"
   	},
   	{
@@ -273,7 +246,7 @@ const CoralConfig = {
   				"type": "bytes32"
   			}
   		],
-  		"name": "LogSafeSendWithdrawal",
+  		"name": "LogItemWithdrawal",
   		"type": "event"
   	},
   	{
@@ -285,31 +258,7 @@ const CoralConfig = {
   				"type": "bytes32"
   			}
   		],
-  		"name": "LogSafeSendDeliver",
-  		"type": "event"
-  	},
-  	{
-  		"anonymous": false,
-  		"inputs": [
-  			{
-  				"indexed": false,
-  				"name": "_time",
-  				"type": "uint256"
-  			}
-  		],
-  		"name": "LogDepositsPaused",
-  		"type": "event"
-  	},
-  	{
-  		"anonymous": false,
-  		"inputs": [
-  			{
-  				"indexed": false,
-  				"name": "_time",
-  				"type": "uint256"
-  			}
-  		],
-  		"name": "LogDepositsUnpaused",
+  		"name": "LogItemDeliver",
   		"type": "event"
   	},
   	{
@@ -361,6 +310,30 @@ const CoralConfig = {
   			}
   		],
   		"name": "LogFeeRateUpdated",
+  		"type": "event"
+  	},
+  	{
+  		"anonymous": false,
+  		"inputs": [
+  			{
+  				"indexed": false,
+  				"name": "_time",
+  				"type": "uint256"
+  			}
+  		],
+  		"name": "LogDepositsPaused",
+  		"type": "event"
+  	},
+  	{
+  		"anonymous": false,
+  		"inputs": [
+  			{
+  				"indexed": false,
+  				"name": "_time",
+  				"type": "uint256"
+  			}
+  		],
+  		"name": "LogDepositsUnpaused",
   		"type": "event"
   	},
   	{
@@ -427,6 +400,20 @@ const CoralConfig = {
   	{
   		"constant": true,
   		"inputs": [],
+  		"name": "getItemCount",
+  		"outputs": [
+  			{
+  				"name": "",
+  				"type": "uint256"
+  			}
+  		],
+  		"payable": false,
+  		"stateMutability": "view",
+  		"type": "function"
+  	},
+  	{
+  		"constant": true,
+  		"inputs": [],
   		"name": "getMargin",
   		"outputs": [
   			{
@@ -456,41 +443,15 @@ const CoralConfig = {
   		"constant": true,
   		"inputs": [
   			{
-  				"name": "_id",
+  				"name": "_itemId",
   				"type": "bytes32"
   			}
   		],
-  		"name": "getSafeSend",
+  		"name": "isProcessing",
   		"outputs": [
   			{
   				"name": "",
-  				"type": "address"
-  			},
-  			{
-  				"name": "",
-  				"type": "address"
-  			},
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			},
-  			{
-  				"name": "",
-  				"type": "uint8"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [],
-  		"name": "getSafeSendCount",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "uint256"
+  				"type": "bool"
   			}
   		],
   		"payable": false,
@@ -627,42 +588,11 @@ const CoralConfig = {
   		"constant": true,
   		"inputs": [
   			{
-  				"name": "_id",
+  				"name": "_itemId",
   				"type": "bytes32"
   			}
   		],
-  		"name": "viewSafeSendProvider",
-  		"outputs": [
-  			{
-  				"name": "",
-  				"type": "address"
-  			},
-  			{
-  				"name": "",
-  				"type": "address"
-  			},
-  			{
-  				"name": "",
-  				"type": "uint256"
-  			},
-  			{
-  				"name": "",
-  				"type": "uint8"
-  			}
-  		],
-  		"payable": false,
-  		"stateMutability": "view",
-  		"type": "function"
-  	},
-  	{
-  		"constant": true,
-  		"inputs": [
-  			{
-  				"name": "_id",
-  				"type": "bytes32"
-  			}
-  		],
-  		"name": "viewSafeSendUser",
+  		"name": "viewItem",
   		"outputs": [
   			{
   				"name": "",
