@@ -1,11 +1,9 @@
 /* eslint-disable */
 const CoralConfig = {
   gasLimitSuggestion: 300000,
-  lowThreshold: 20,
-  highThreshold: 30,
   chainID: 1,
   chainIDEnglish: 'mainnet',
-  safeSendEscrowContractAddress: '0x05573c312bdbc684a091fe2aa0a8f7a315b3de29',
+  safeSendEscrowContractAddress: '0xdfA32A517D26a193321277Ef1b486c68cfA58aEA',
   safeSendEscrowContractAbi: [
   	{
   		"constant": false,
