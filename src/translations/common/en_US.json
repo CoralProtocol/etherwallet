@@ -1,6 +1,7 @@
 {
-  "getAFreeWallet": "Get a Free wallet",
+  "createANewWallet": "Create A New Wallet",
   "accessMyWallet": "Access My Wallet",
+  "accessWallet": "Access Wallet",
   "faqs": "FAQs",
   "sendTx": "Send ETH & Tokens",
   "sendSafeSendTx": "Protect Your ETH Transaction Using SafeSend",
@@ -57,5 +58,6 @@
   "gasLimit": "Gas Limit",
   "gasPrice": "Gas Price",
   "data": "Data",
-  "confirmAndSend": "Confirm and Send"
+  "confirmAndSend": "Confirm and Send",
+  "waitingForHash" : "Waiting for Transaction Hash"
 }

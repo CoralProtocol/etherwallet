@@ -1,4 +1,4 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { createLocalVue } from '@vue/test-utils';
 import VueI18n from 'vue-i18n';
 import BootstrapVue from 'bootstrap-vue';
 import VueX from 'vuex';
@@ -6,6 +6,7 @@ import VueQrcode from '@xkeshi/vue-qrcode';
 
 import ClickOutside from '@/directives/ClickOutside';
 import EnsResolver from '@/directives/EnsResolver';
+import { state, getters } from './mockStore.js';
 
 import en_US from '@/translations/en_US.js';
 const languages = {
@@ -32,7 +33,10 @@ function createLocalVueInstance() {
     silentTranslationWarn: true
   });
 
-  const store = new VueX.Store();
+  const store = new VueX.Store({
+    state: state,
+    getters: getters
+  });
   return {
     localVue,
     i18n,

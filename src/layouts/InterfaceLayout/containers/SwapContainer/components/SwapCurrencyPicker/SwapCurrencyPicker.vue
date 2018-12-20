@@ -10,6 +10,14 @@
         @click="openDropdown"
       >
         <p>
+          <span
+            :class="[
+              'cc',
+              selectedCurrency.symbol,
+              'alt-' + selectedCurrency.symbol,
+              'cc-icon'
+            ]"
+          />
           {{ selectedCurrency.symbol }}
           <span class="subname">- {{ selectedCurrency.name }}</span>
         </p>
@@ -18,7 +26,7 @@
       </div>
       <div :class="[open ? 'open' : 'hide', 'dropdown-item-container']">
         <div class="dropdown-search-container">
-          <input v-model="search" placeholder="Search" />
+          <input v-model="search" :placeholder="$t('interface.search')" />
           <i class="fa fa-search" />
         </div>
         <div class="item-container">
@@ -37,10 +45,11 @@
             :key="
               token ? curr.name + curr.symbol + page : curr.name + page + idx
             "
-            @click="selectCurrency(curr);"
+            @click="selectCurrency(curr)"
           >
             <p>
-              {{ curr.symbol }} <span class="subname">- {{ curr.name }}</span>
+              <i :class="['cc', curr.symbol, 'cc-icon']" /> {{ curr.symbol }}
+              <span class="subname">- {{ curr.name }}</span>
             </p>
             <p />
             <p v-show="!token">{{ curr.name }}</p>
@@ -52,6 +61,8 @@
 </template>
 
 <script>
+import '@/assets/images/currency/coins/asFont/cryptocoins.css';
+import '@/assets/images/currency/coins/asFont/cryptocoins-colors.css';
 export default {
   props: {
     currencies: {

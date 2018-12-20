@@ -18,6 +18,7 @@
       ref="confirmCollectionModal"
       :send-batch-transactions="sendBatchTransactions"
       :signed-array="signedArray"
+      :sending="sending"
     />
     <confirm-modal
       ref="offlineGenerateConfirmModal"
@@ -52,7 +53,7 @@
 
 <script>
 import * as unit from 'ethjs-unit';
-import BN from 'bignumber.js';
+import BigNumber from 'bignumber.js';
 import ConfirmModal from './components/ConfirmModal';
 import ConfirmCollectionModal from './components/ConfirmCollectionModal';
 import SuccessModal from './components/SuccessModal';
@@ -107,7 +108,8 @@ export default {
       dismissed: true,
       web3WalletHash: '',
       web3WalletRes: '',
-      signedArray: []
+      signedArray: [],
+      sending: false
     };
   },
   computed: {
@@ -271,7 +273,10 @@ export default {
       this.toAddress = tx.to;
       this.amount = +tx.value;
       this.transactionFee = Number(
-        unit.fromWei(new BN(tx.gasPrice).times(tx.gas).toString(), 'ether')
+        unit.fromWei(
+          new BigNumber(tx.gasPrice).times(tx.gas).toString(),
+          'ether'
+        )
       );
       this.ens = {};
       if (tx.hasOwnProperty('ensObj')) {
@@ -320,6 +325,7 @@ export default {
       }, 500);
     },
     async sendBatchTransactions() {
+      this.sending = true;
       const web3 = this.web3;
       const batch = new web3.eth.BatchRequest();
       for (let i = 0; i < this.signedArray.length; i++) {

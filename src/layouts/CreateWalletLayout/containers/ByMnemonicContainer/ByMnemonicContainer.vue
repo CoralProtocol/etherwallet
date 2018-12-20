@@ -1,6 +1,6 @@
 <template>
   <div class="create-wallet-by-mnemonic">
-    <finish-modal ref="finish" />
+    <finish-modal ref="finish" :unlock="unlockWallet" />
     <verification-modal
       ref="verification"
       :mnemonic-values="mnemonicValues"
@@ -13,7 +13,6 @@
           <b-tab title="By Mnemonic Phrase" active>
             <div class="title-popover">
               <h3>{{ $t('createWallet.byMnemonicWriteDown') }}</h3>
-              <popover :popcontent="$t('popover.whatIsMessageContent')" />
             </div>
             <div class="contents">
               <div class="tools">
@@ -96,6 +95,9 @@ export default {
     this.mnemonicValues = bip39.generateMnemonic(128).split(' ');
   },
   methods: {
+    unlockWallet() {
+      this.$router.push('/access-my-wallet');
+    },
     mnemonicValueRefresh() {
       if (this.mnemonic24 === true) {
         this.mnemonicValues = bip39.generateMnemonic(256).split(' ');

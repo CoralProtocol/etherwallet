@@ -46,9 +46,9 @@
           {{ $t('interface.sendTx') }}
         </div>
         <interface-bottom-text
-          :link="'/'"
-          :link-text="'Learn more'"
-          :question="'Have any issues?'"
+          link="https://kb.myetherwallet.com"
+          question="Have issues?"
+          link-text="Help Center"
         />
       </div>
     </div>
@@ -81,7 +81,9 @@ export default {
     signedTx() {
       return this.readTx.hasOwnProperty('rawTransaction')
         ? this.readTx.rawTransaction
-        : JSON.parse(this.rawTx).rawTransaction;
+        : this.rawTx.hasOwnProperty('rawTransaction')
+        ? JSON.parse(this.rawTx).rawTransaction
+        : '';
     }
   },
   watch: {

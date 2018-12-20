@@ -40,8 +40,8 @@
           <div class="title">
             <h4>{{ $t('interface.abiJsonInt') }}</h4>
             <div class="copy-buttons">
-              <span @click="deleteInput('abi');">{{ $t('common.clear') }}</span>
-              <span @click="copyToClipboard('abi');">{{
+              <span @click="deleteInput('abi')">{{ $t('common.clear') }}</span>
+              <span @click="copyToClipboard('abi')">{{
                 $t('common.copy')
               }}</span>
             </div>
@@ -66,15 +66,15 @@
               : 'disabled',
             'submit-button large-round-button-green-filled clickable'
           ]"
-          @click="switchView('forward');"
+          @click="switchView('forward')"
         >
           {{ $t('common.continue') }}
           <img src="~@/assets/images/icons/right-arrow.png" />
         </div>
         <interface-bottom-text
-          :link-text="$t('interface.learnMore')"
+          :link-text="$t('interface.helpCenter')"
           :question="$t('interface.haveIssues')"
-          link="mailto:support@myetherwallet.com"
+          link="https://kb.myetherwallet.com"
         />
       </div>
     </div>
@@ -239,7 +239,7 @@
         <div class="buttons interact-buttons">
           <div
             class="submit-button large-round-button-green-border clickable"
-            @click="switchView('backwards');"
+            @click="switchView('backwards')"
           >
             {{ $t('common.back') }}
           </div>
@@ -272,9 +272,9 @@
           </div>
         </div>
         <interface-bottom-text
-          :link-text="$t('interface.learnMore')"
+          :link-text="$t('interface.helpCenter')"
           :question="$t('interface.haveIssues')"
-          link="mailto:support@myetherwallet.com"
+          link="https://kb.myetherwallet.com"
         />
       </div>
     </div>

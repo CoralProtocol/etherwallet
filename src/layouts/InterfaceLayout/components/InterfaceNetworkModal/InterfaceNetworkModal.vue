@@ -47,7 +47,7 @@
                   : ''
               "
               class="switch-network"
-              @click="switchNetwork(net);"
+              @click="switchNetwork(net)"
             >
               {{ net.service }}
             </p>
@@ -69,22 +69,18 @@
               "
               class="switch-network custom-network-item"
             >
-              <p @click="switchNetwork(net);">
+              <p @click="switchNetwork(net)">
                 {{ net.service }} {{ '(' + net.type.name + ')' }}
               </p>
               <i
                 class="fa fa-times-circle"
-                @click.prevent="removeNetwork(net, idx);"
+                @click.prevent="removeNetwork(net, idx)"
               />
             </div>
           </div>
         </div>
       </div>
-      <form
-        v-if="selectedNetwork && selectedNetwork.type"
-        ref="networkAdd"
-        class="network-add hidden"
-      >
+      <form ref="networkAdd" class="network-add hidden">
         <div class="content-block">
           <div class="input-block-container">
             <input
@@ -122,7 +118,7 @@
               autocomplete="off"
             />
             <input
-              v-show="selectedNetwork.type.name === 'CUS'"
+              v-show="selectedNetwork.name === 'CUS'"
               v-model="blockExplorerTX"
               class="custom-input-text-1"
               type="number"
@@ -131,7 +127,7 @@
               autocomplete="off"
             />
             <input
-              v-show="selectedNetwork.type.name === 'CUS'"
+              v-show="selectedNetwork.name === 'CUS'"
               v-model="chainID"
               class="custom-input-text-1"
               type="number"
@@ -140,7 +136,7 @@
               autocomplete="off"
             />
             <input
-              v-show="selectedNetwork.type.name === 'CUS'"
+              v-show="selectedNetwork.name === 'CUS'"
               v-model="blockExplorerAddr"
               class="custom-input-text-1"
               type="number"
@@ -192,9 +188,9 @@
               {{ $t('interface.save') }}
             </button>
             <interface-bottom-text
-              :link-text="$t('interface.learnMore')"
+              :link-text="$t('interface.helpCenter')"
               :question="$t('interface.dontKnow')"
-              link="mailto:support@myetherwallet.com"
+              link="https://kb.myetherwallet.com"
             />
           </div>
         </div>
@@ -218,7 +214,7 @@ export default {
   data() {
     return {
       types: networkTypes,
-      selectedNetwork: this.network,
+      selectedNetwork: {},
       chainID: '',
       port: '',
       name: '',
@@ -238,7 +234,7 @@ export default {
   },
   watch: {
     selectedNetwork(newVal) {
-      this.chainID = newVal ? newVal.type.chainID : -1;
+      this.chainID = newVal ? newVal.chainID : -1;
     }
   },
   mounted() {
@@ -326,6 +322,8 @@ export default {
           this.selectedNetwork = network;
         });
       });
+
+      this.$refs.network.hide();
     }
   }
 };

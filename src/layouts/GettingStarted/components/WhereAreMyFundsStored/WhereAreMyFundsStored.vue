@@ -21,7 +21,7 @@
                 <label class="switch">
                   <input
                     type="checkbox"
-                    @click="expenderContentShow = !expenderContentShow;"
+                    @click="expenderContentShow = !expenderContentShow"
                   />
                   <span class="slider round" />
                 </label>
@@ -35,6 +35,7 @@
                 <a
                   href="https://kb.myetherwallet.com/getting-started/getting-started-new.html"
                   target="_blank"
+                  rel="noopener noreferrer"
                   >{{ $t('gettingStarted.whatIsBlockchainDesc2link') }}</a
                 >.
               </p>
