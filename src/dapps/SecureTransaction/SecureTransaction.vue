@@ -5,7 +5,11 @@
       <div class="advanced-content safe-send-container">
         <div class="input-container">
           <div style="width:55%;font-size:16px">
-            <strong><span style='color:#05c0a5;font-size:16px'>SafeSend</span>&nbsp;protects your transaction from fraud, phishing, and theft.</strong>
+            <strong
+              ><span style="color:#05c0a5;font-size:16px">SafeSend</span
+              >&nbsp;protects your transaction from fraud, phishing, and
+              theft.</strong
+            >
           </div>
           <br />
           <div>
@@ -40,9 +44,7 @@
             />
             <i
               :class="[
-                validAmount
-                  ? ''
-                  : 'not-good',
+                validAmount ? '' : 'not-good',
                 'fa fa-check-circle good-button'
               ]"
               aria-hidden="true"
@@ -73,7 +75,7 @@
 
             <p
               class="copy-button prevent-user-select"
-              @click="copyToClipboard('address');"
+              @click="copyToClipboard('address')"
             >
               {{ $t('common.copy') }}
             </p>
@@ -116,7 +118,7 @@
               gasPrice === highestGas / 4 ? 'active' : '',
               'small-circle-button-green-border'
             ]"
-            @click="changeGas(highestGas / 4);"
+            @click="changeGas(highestGas / 4)"
           >
             {{ $t('common.slow') }}
           </div>
@@ -125,7 +127,7 @@
               gasPrice === highestGas / 2 ? 'active' : '',
               'small-circle-button-green-border'
             ]"
-            @click="changeGas(highestGas / 2);"
+            @click="changeGas(highestGas / 2)"
           >
             {{ $t('common.regular') }}
           </div>
@@ -134,7 +136,7 @@
               gasPrice === highestGas ? 'active' : '',
               'small-circle-button-green-border'
             ]"
-            @click="changeGas(highestGas);"
+            @click="changeGas(highestGas)"
           >
             {{ $t('common.fast') }}
           </div>
@@ -270,7 +272,9 @@ export default {
       }
     },
     amount() {
-      this.validAmount = this.amount >= parseFloat(this.minimumAmount, 10) && this.amount <= parseFloat(this.parsedBalance, 10)
+      this.validAmount =
+        this.amount >= parseFloat(this.minimumAmount, 10) &&
+        this.amount <= parseFloat(this.parsedBalance, 10);
     },
     parsedBalance(newVal) {
       this.parsedBalance = newVal;
@@ -312,7 +316,6 @@ export default {
         // eslint-disable-next-line no-console
         console.error(err);
       });
-
   },
   methods: {
     debouncedAmount: utils._.debounce(function(e) {
